@@ -26,6 +26,6 @@ Emma Avery is a MSc student in Soil Sciences at UBC, where she is researching th
 ## Brief summary of the case and a proposal of the analysis
  Brief summary of the case and a proposal of the analysis can be shown in the following link:
  
- [Homework01](https://github.com/STAT545-UBC/jhohura_fatema/blob/master/hw01)
+ [Homework01](https://github.com/fjhohura/Stat550/blob/master/proposal/Brief_summary.md)
  
 
