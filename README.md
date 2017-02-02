@@ -14,7 +14,7 @@ A short introduction about S450 and S550 students is summarized in the following
 | **Qiaoyue Tang**       | Department of Statistic                                     |
 | **Yidie Feng**        | Department of Statistics |
 | **Fatema Tuz Jhohura** | MSc in the department of Statistics     |
-| **Sonja**      | Phd in the department of Statistics
+| **Sonja Surjanovic**      | Phd in the department of Statistics
 
 
 
