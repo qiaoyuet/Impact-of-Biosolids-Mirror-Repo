@@ -1,9 +1,11 @@
 ---
 title: "Assignment-2 Stat 550 (Soil Project)"
-author: "Fatema Tuz Jhohura, Sonja"
-date: "`February 02, 2017`"
+author: "Fatema Tuz Jhohura, Sonja Surjanovic"
+date: "February 02, 2017"
 output: github_document
 ---
+
+This is a test.
 
 ## List of S450 and S550 students for Soil project
 
@@ -11,8 +13,8 @@ A short introduction about S450 and S550 students is summarized in the following
 
 |   Names      |          Programme                                            |
 |---------|-------------------------------------------------------|
-| **Qiaoyue Tang**       | Department of Statistic                                     |
-| **Yidie Feng**        | Department of Statistics |
+| **Qiaoyue Tang**       | BSc in the Department of Statistics                                     |
+| **Yidie Feng**        | BSc in the Department of Statistics |
 | **Fatema Tuz Jhohura** | MSc in the department of Statistics     |
 | **Sonja Surjanovic**      | Phd in the department of Statistics
 
