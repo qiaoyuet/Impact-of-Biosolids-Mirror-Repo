@@ -1,6 +1,6 @@
 ---
 title: "Brief Summary and proposal of analysis"
-author: "Fatema Tuz Jhohura, Sonja"
+author: "Fatema Tuz Jhohura, Sonja Surjanovic"
 date: "February 1, 2017"
 output: html_document
 ---
