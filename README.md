@@ -1,7 +1,7 @@
 ---
 title: "Assignment-2 Stat 550 (Soil Project)"
-author: "Fatema Tuz Jhohura, Sonja"
-date: "`February 02, 2017`"
+author: "Fatema Tuz Jhohura, Sonja Surjanovic"
+date: "February 02, 2017"
 output: github_document
 ---
 
