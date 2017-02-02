@@ -24,8 +24,10 @@ For the soil sampling, three 50-m-long transects were placed between the plant t
 
 ## Brief proposal of the analysis
 
-Two analysis steps will be conducted, using similar models but focusing on different response variables.
+Three analysis steps will be conducted, using similar models but focusing on different response variables.
 
 In the first analysis, conducted by the STAT 450 students, the question of interest is whether aggregate stability is affected by the fertilizer treatment (biosolid or control). The response variable is MWD, a measure of soil quality. The data will be analyzed using a mixed-effects linear model, with a random effect for the blocks. A further factor in the model will be the date of measurement (April, June, August or October), since this is also of interest to the researcher.
 
 The second analysis, conducted by the STAT 550 students, focuses on how the plant species composition is affected by the fertilizer treatment. The response values of interest will be the cover values for each of several plant species. These values are obtained by determining the cover class for each plant species within each plot (based on what percentage of the plot is taken up by the plant), and then converting these classes to the midpoint of an interval of percentages. We will not consider dates for this study, since all the measurements are taken in June 2016.
+
+Finally, in a third but simple analysis step, correlations will be obtained between MWD and cover value, for each of several plant species.
