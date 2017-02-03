@@ -1,6 +1,6 @@
 ---
 title: "First Meeting with Client"
-author: "Qiaoyue Tang & Yidie Feng"
+author: "Qiaoyue Tang, Yidie Feng"
 date: "February 02, 2017"
 output: github_document
 ---
