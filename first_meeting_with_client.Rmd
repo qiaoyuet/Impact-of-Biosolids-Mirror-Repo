@@ -5,6 +5,7 @@ date: "February 02, 2017"
 output: github_document
 ---
 
+
 ##Experimental design 
 - Randomized block design with 4 blocks, 2 treatments in each block (biosolids vs control), 5 transects for plant species assessment and 3 transects for aggregate stability investigation within each treatment. Transects are equally spaced.
 - Half of one block = 1 experimental unit.
