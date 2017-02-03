@@ -2,7 +2,7 @@
 title: "First Meeting with Client"
 author: "Qiaoyue Tang & Yidie Feng"
 date: "February 02, 2017"
-output: html_document
+output: github_document
 ---
 
 ##Experimental design 
