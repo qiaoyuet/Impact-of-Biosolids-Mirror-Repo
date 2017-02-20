@@ -2,7 +2,7 @@
 title: "INITIAL SOIL SCRIPT"
 author: "Yidie Feng"
 date: "2/19/2017"
-output: html_document
+output: md_document
 ---
 
 ## LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
