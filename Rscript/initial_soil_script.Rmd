@@ -1,6 +1,6 @@
 ---
 title: "INITIAL SOIL SCRIPT"
-author: "Yidie"
+author: "Yidie Feng"
 date: "2/19/2017"
 output: html_document
 ---
@@ -69,6 +69,7 @@ summary(soil.rbd2)
 plot(soil.rbd2)
 ```
 
+I am not sure if I specify the model correctly here.
 Mixed-effects models (with and without nested factors):
 ```{r}
 lmer1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
