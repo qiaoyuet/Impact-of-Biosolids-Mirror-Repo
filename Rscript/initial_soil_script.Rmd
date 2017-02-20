@@ -69,18 +69,28 @@ summary(soil.rbd2)
 plot(soil.rbd2)
 ```
 
-I am not sure if I specify the model correctly here.
-Mixed-effects models (with and without nested factors):
+
+Mixed-effects model:
 ```{r}
 lmer1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
 summary(lmer1)
+```
 
+Mixed-effects model with nested factor:
+```{r}
 lmer2<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
 summary(lmer2)
+```
 
+Mixed-effects model with nested factor and repeated measurements:  
+(I am not sure if I specify the model correctly here. I am thinking about fixed block effect, fixed treatment effect, random transect effect, transect factor nested within treatment factor, transect was measured repeatedly over date.)
+```{r}
 lmer3<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
 summary(lmer3)
+```
 
+Comparing models:
+```{r}
 anova(lmer1,lmer3)
 anova(lmer2,lmer3)
 ```
