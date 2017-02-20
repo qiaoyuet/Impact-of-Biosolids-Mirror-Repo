@@ -1,0 +1,90 @@
+---
+title: "INITIAL SOIL SCRIPT"
+author: "Yidie"
+date: "2/19/2017"
+output: html_document
+---
+
+## LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
+
+### Explore the data
+```{r,warning=FALSE,message=FALSE,results='hide'}
+library("ggplot2")
+library(lme4)
+library(reshape2)
+library(MASS)
+library(dplyr)
+```
+
+```{r}
+soil<-read.table("MWD.csv", sep = ",", header = T) 
+head(soil)
+str(soil)
+with(soil,table(Treatment, Date))
+group_by(soil,Date,Treatment) %>%
+  summarise(mean(MWD))
+```
+
+### Looking and understanding the data
+```{r,echo=TRUE}
+hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
+
+ggplot(aes(x=soil$Treatment,y=soil$MWD), data=soil) + geom_boxplot() + labs(y="MWD", x="Treatment", main="Boxplot of MWD for the Two Treatment Groups")
+tapply(soil$MWD, soil$Treatment, mean)
+tapply(soil$MWD, soil$Treatment, sd)
+
+Transect.f<-as.factor(soil$Transect)
+plot.design(MWD~Treatment+Block+Date+Transect.f, data = soil, xlab="Treatment", ylab="MWD")
+
+ggplot(soil, aes(x = Date, y = MWD, group = Treatment, colour = Treatment)) +
+stat_summary(fun.y="mean", geom = "line") +
+labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
+```
+
+### Analysis
+
+A simple model to start with:  
+- Randomized block design  
+- Ignore the transects and repeated measurements for now  
+- Treat the data collected from the transects as random samples  
+- Assume no block interaction effects
+
+Looking at the data in terms of treatment and block:
+```{r,echo=TRUE}
+interaction.plot(soil$Treatment, soil$Block, soil$MWD, xlab="Treatment", ylab="MWD", main="Change in MWD over Treatments by Block")
+```
+
+```{r,echo=TRUE}
+boxcox(MWD~Block+Treatment, data=soil) # To see if transformation on y is needed
+soil.rbd<-aov(MWD~Block+Treatment, soil)
+summary(soil.rbd)
+plot(soil.rbd)
+```
+
+Adding Date to the model:
+```{r,echo=TRUE}
+boxcox(MWD~Block+Treatment*Date, data=soil)
+soil.rbd2<-aov(sqrt(MWD)~Block+Treatment*Date, soil)
+summary(soil.rbd2)
+plot(soil.rbd2)
+```
+
+Mixed-effects models (with and without nested factors):
+```{r}
+lmer1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
+summary(lmer1)
+
+lmer2<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
+summary(lmer2)
+
+lmer3<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
+summary(lmer3)
+
+anova(lmer1,lmer3)
+anova(lmer2,lmer3)
+```
+
+
+
+
+
