@@ -1,6 +1,6 @@
 ---
 title: "INITIAL SOIL SCRIPT"
-author: "Yidie Feng"
+author: "Yidie Feng & Qiaoyue Tang"
 date: "2/19/2017"
 output: md_document
 ---
@@ -14,6 +14,7 @@ library(lme4)
 library(reshape2)
 library(MASS)
 library(dplyr)
+library(base)
 ```
 
 ```{r}
@@ -96,6 +97,101 @@ anova(lmer2,lmer3)
 ```
 
 
+## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
+
+### Data Exploration
+```{r,echo=TRUE}
+pc <- read.csv("plant_cover.csv", header = T)
+attach(pc)
+str(pc)
+Block.f <- as.factor(Block)
+Transect.f <- as.factor(Transect)
+
+group_by(pc,Block,Treatment) %>%
+  summarise(mean(Cover.value), sd(Cover.value))
+
+ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
+
+ggplot(aes(x = Block, y = Cover.class, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Class", title = "Change in Cover Class over Different Blocks")
+
+# From the plots above we can see Cover Class and Cover Value are almost the same in terms of changes with Treatment and within Blocks. We use Cover Value because it is closer to a continuous variable.
+```
+
+### Diagnostics: checking assumptions of linear models
+```{r,echo=TRUE}
+plot(Treatment, Cover.value)
+# similar variability of cover value within two levels of treatment although strange behaviour of Control group
+
+qqnorm(Cover.value)
+# strange behaviour due to the fact that cover value is discrete
+hist(Cover.value)
+# not quite normal, heavy right tail
+
+# I tried the following transformations to reduce right skewness but it does not seem to work well. I continued with non-transfromed response value in the analysis below, but this should be a concern?
+hist(1/Cover.value)
+Cover.value.log <- log(Cover.value)
+hist(Cover.value.log)
+Cover.value.sqrt <- sqrt(Cover.value)
+hist(Cover.value.sqrt)
+
+pc_sub <- pc[ ,c(3,4,5,9)]
+acf(pc_sub)
+# no multicolinearity within explnatory variables
+
+# Residuals are checked in the next section after imposing each linear model.
+```
+
+### Analysis
+1) Model 1: all explanatory variables are fixed categorical variables
+```{r,echo=TRUE}
+model1 <- aov(Cover.value ~ Block.f * Treatment * Transect.f)
+summary(model1)
+plot(resid(model1))
+# lm output for comparing each level
+summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
+```
+Comment: Treatment effect seems to be significant. Sum of squares for residuals is very large, indicating a lot of variation is unexplained and the significance of treatment might not be true. No obvious pattern from residual plot.
+
+2) Model 2: Transect is now a random effect, Block and Treatment are fixed effects
+```{r}
+model2.1 <- lmer(Cover.value ~ Treatment+Block.f+(1|Transect.f))
+summary(model2.1)
+model2.2 <- lmer(Cover.value ~ 1+Block+(1|Transect.f))
+anova(model2.2, model2.1)
+```
+Comment: Treatment effect is still significant at the same significance level. From the lm output, A small proportion of randomness is explained by Transect effects but variance of residuals is still quite large. The residuals seem to be centered at 0 from the summary of lm output: scaled residuals.
+
+Question: I did not use aov() because I am not sure how to read summary of aov output properly when there are three explanatory variables. It contains strange behaviours. Not sure if aov output would be more useful here.
+
+3) Model 3: Mixed effects models with nested structure
+```{r}
+model3.1 <- lmer(Cover.value ~ Treatment+Block.f+(1|Treatment:Transect.f))
+summary(model3.1)
+model3.2 <- lmer(Cover.value ~ 1+Block.f+(1|Treatment:Transect.f))
+anova(model3.1, model3.2)
+```
+Comment: Treatment is still a significant factor in this mixed effect nested model. Same as before, residual variance is still large.
+
+4) Quick comment on Ordinal regression model to incorporate that Cover.value is a discrete dependent variable
+```{r}
+Cover.value.f <- as.factor(Cover.value)
+model4.1 <- polr(Cover.value.f ~ Treatment+Block.f+Transect.f, Hess = T)
+summary(model4.1)
+model4.2 <- polr(Cover.value.f ~ 1+Block.f+Transect.f, Hess = T)
+anova(model4.1, model4.2)
+```
+I tried to include random effects in ordinal regression model but polr() does not recognize the same syntax as above. In addition I get confused when comparing two ordinal regression models as anova() shows a p-value of 0. I think we should discuss whether it is enough to assume that Cover.value is contineous before exploring more about ordinal regression?
+```{r}
+detach(pc)
+```
 
 
-
+## Correlation between Plant Cover and MWD
+```{r}
+pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
+soil.june <- soil %>%
+  filter(Date == "June")
+soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
+cor(pc.corr[2], soil.corr[2])
+```
+MWD and Plant Cover Value seem to have a strong negative correlation which is strange because we expect to see at least a positive correlation. The problem is that the two variable, MWD and Cover Value, do not have the same length. MWD is measured in 4 months and is calculated as an average of 3 transects. Cover Value is measured only once in June and is calculated as an average of 5 transects. In the code above, I simply take all average within blocks (4 measurements for each MWD and plant cover data) and take only June measurements from MWD data. We should fix this issue soon in next steps.
