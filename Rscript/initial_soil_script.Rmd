@@ -83,7 +83,7 @@ summary(lmer2)
 ```
 
 Mixed-effects model with nested factor and repeated measurements:  
-(I am not sure if I specify the model correctly here. I am thinking about fixed block effect, fixed treatment effect, random transect effect, transect factor nested within treatment factor, transect was measured repeatedly over date.)
+(I am not sure if I formulate the model I want with correct R syntax. I am thinking about fixed block effect, fixed treatment effect, random transect effect, transect factor nested within treatment factor, transect was measured repeatedly over date.)
 ```{r}
 lmer3<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
 summary(lmer3)
