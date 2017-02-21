@@ -75,7 +75,6 @@ summary(soil.rbd2)
 plot(soil.rbd2)
 ```
 
-
 Mixed-effects model:
 ```{r}
 lmer1.1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
