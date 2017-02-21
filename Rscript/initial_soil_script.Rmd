@@ -34,6 +34,11 @@ ggplot(aes(x=soil$Treatment,y=soil$MWD), data=soil) + geom_boxplot() + labs(y="M
 tapply(soil$MWD, soil$Treatment, mean)
 tapply(soil$MWD, soil$Treatment, sd)
 
+qqnorm(soil$MWD)
+qqline(soil$MWD)
+
+acf(soil)
+
 Transect.f<-as.factor(soil$Transect)
 plot.design(MWD~Treatment+Block+Date+Transect.f, data = soil, xlab="Treatment", ylab="MWD")
 
@@ -73,29 +78,31 @@ plot(soil.rbd2)
 
 Mixed-effects model:
 ```{r}
-lmer1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
-summary(lmer1)
+lmer1.1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
+summary(lmer1.1)
+
+lmer1.2<-lmer(MWD~Block*Date+(1|Transect.f), soil)
+anova(lmer1.1,lmer1.2)
 ```
 
 Mixed-effects model with nested factor:
 ```{r}
-lmer2<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
-summary(lmer2)
+lmer2.1<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
+summary(lmer2.1)
+
+lmer2.2<-lmer(MWD~Block*Date+(1|Treatment:Transect.f), soil)
+anova(lmer2.1,lmer2.2)
 ```
 
 Mixed-effects model with nested factor and repeated measurements:  
 (I am not sure if I formulate the model I want with correct R syntax. I am thinking about fixed block effect, fixed treatment effect, random transect effect, transect factor nested within treatment factor, transect was measured repeatedly over date.)
 ```{r}
-lmer3<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
-summary(lmer3)
-```
+lmer3.1<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
+summary(lmer3.1)
 
-Comparing models:
-```{r}
-anova(lmer1,lmer3)
-anova(lmer2,lmer3)
+lmer3.2<-lmer(MWD~Block*Date+(Date|Treatment:Transect.f), soil)
+anova(lmer3.1,lmer3.2)
 ```
-
 
 ## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
@@ -186,7 +193,7 @@ detach(pc)
 ```
 
 
-## Correlation between Plant Cover and MWD
+### Correlation between Plant Cover and MWD
 ```{r}
 pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
 soil.june <- soil %>%
