@@ -28,19 +28,21 @@ group_by(soil,Date,Treatment) %>%
 
 ### Looking and understanding the data
 
+> S550: Great exploratory analysis. But what is the motivation behind the qqnorm plot? It might not be required for the model we are using. Also, what information does the acf() plot give us?
+
+> S550: Some comments above chunks of code would be useful, to state what some of the lesser-known functions do.
+
+
 ```{r,echo=TRUE}
 hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
 
-> S550: Great exploratory analysis.
 ggplot(aes(x=soil$Treatment,y=soil$MWD), data=soil) + geom_boxplot() + labs(y="MWD", x="Treatment", main="Boxplot of MWD for the Two Treatment Groups")
 tapply(soil$MWD, soil$Treatment, mean)
 tapply(soil$MWD, soil$Treatment, sd)
 
-> S550: What is the motivation behind the qqnorm plot? It might not be required for the model we are using.
 qqnorm(soil$MWD)
 qqline(soil$MWD)
 
-> S550: What information does this plot give us? Perhaps a comment above it, to describe what the function does.
 acf(soil)
 
 Transect.f<-as.factor(soil$Transect)
