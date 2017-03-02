@@ -77,6 +77,7 @@ plot(soil.rbd)
 
 Adding Date to the model:
 > S550: Is the transformation completely necessary? How much of a difference does it make in the fit? It makes the results less intuitive, so perhaps it's best to leave it out unless the linearity assumption is strongly violated.
+
 ```{r,echo=TRUE}
 boxcox(MWD~Block+Treatment*Date, data=soil)
 soil.rbd2<-aov(sqrt(MWD)~Block+Treatment*Date, soil)
