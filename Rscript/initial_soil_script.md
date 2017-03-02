@@ -57,6 +57,13 @@ LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
 
 ### Looking and understanding the data
 
+> S550: Great exploratory analysis. But what is the motivation behind
+> the qqnorm plot? It might not be required for the model we are using.
+> Also, what information does the acf() plot give us?
+
+> S550: Some comments above chunks of code would be useful, to state
+> what some of the lesser-known functions do.
+
     hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-1.png)
@@ -97,6 +104,9 @@ LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
 
 ### Analysis
 
+> S550: Good idea to build up the model in this way. But we can take out
+> all the preliminary models when we write the final report.
+
 A simple model to start with:  
 - Randomized block design  
 - Ignore the transects and repeated measurements for now  
@@ -127,7 +137,10 @@ Looking at the data in terms of treatment and block:
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-2.png)![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-3.png)![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-4.png)![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-5.png)
 
-Adding Date to the model:
+Adding Date to the model: \> S550: Is the transformation completely
+necessary? How much of a difference does it make in the fit? It makes
+the results less intuitive, so perhaps it's best to leave it out unless
+the linearity assumption is strongly violated.
 
     boxcox(MWD~Block+Treatment*Date, data=soil)
 
@@ -224,6 +237,10 @@ Mixed-effects model:
     ## lmer1.1 34 -42.640 44.548 55.320 -110.640 77.544     16  4.596e-10 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+> S550: The three-way intercation probably won't be necessary when
+> choosing the final model. How sure are we that even the two-way
+> interaction is necessary? Perhaps we could just do an additive model?
 
 Mixed-effects model with nested factor:
 
@@ -804,3 +821,177 @@ once in June and is calculated as an average of 5 transects. In the code
 above, I simply take all average within blocks (4 measurements for each
 MWD and plant cover data) and take only June measurements from MWD data.
 We should fix this issue soon in next steps.
+
+### Modified model after talking with Professor
+
+A simple model to start with:  
+- Randomized complete block design (but block effect as random)  
+- Ignore the transects and repeated measurements for now  
+- Treat the transects as pseudo-replication
+
+    soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)
+    summary(soil.rcb1)
+
+    ## Linear mixed model fit by REML ['lmerMod']
+    ## Formula: MWD ~ Treatment + (1 | Block)
+    ##    Data: soil
+    ## 
+    ## REML criterion at convergence: 89.4
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -1.8460 -0.8817  0.1860  0.6827  2.1580 
+    ## 
+    ## Random effects:
+    ##  Groups   Name        Variance Std.Dev.
+    ##  Block    (Intercept) 0.004282 0.06544 
+    ##  Residual             0.137167 0.37036 
+    ## Number of obs: 96, groups:  Block, 4
+    ## 
+    ## Fixed effects:
+    ##              Estimate Std. Error t value
+    ## (Intercept)   1.56021    0.06268  24.894
+    ## Treatmentcon -0.20896    0.07560  -2.764
+    ## 
+    ## Correlation of Fixed Effects:
+    ##             (Intr)
+    ## Treatmentcn -0.603
+
+    plot(soil.rcb1)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+
+    soil.rcb2<-lmer(MWD~1+(1|Block), soil)
+    summary(soil.rcb2)
+
+    ## Linear mixed model fit by REML ['lmerMod']
+    ## Formula: MWD ~ 1 + (1 | Block)
+    ##    Data: soil
+    ## 
+    ## REML criterion at convergence: 93.5
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.0288 -0.7462  0.1153  0.7449  2.3642 
+    ## 
+    ## Random effects:
+    ##  Groups   Name        Variance Std.Dev.
+    ##  Block    (Intercept) 0.00387  0.06221 
+    ##  Residual             0.14707  0.38349 
+    ## Number of obs: 96, groups:  Block, 4
+    ## 
+    ## Fixed effects:
+    ##             Estimate Std. Error t value
+    ## (Intercept)  1.45573    0.04999   29.12
+
+    anova(soil.rcb1,soil.rcb2)
+
+    ## refitting model(s) with ML (instead of REML)
+
+    ## Data: soil
+    ## Models:
+    ## soil.rcb2: MWD ~ 1 + (1 | Block)
+    ## soil.rcb1: MWD ~ Treatment + (1 | Block)
+    ##           Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)   
+    ## soil.rcb2  3 95.224 102.92 -44.612   89.224                            
+    ## soil.rcb1  4 89.807 100.06 -40.904   81.807 7.4166      1   0.006463 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Add Date to the model
+
+    soil.date1<-lmer(MWD~Treatment*Date+(1|Block), soil)
+    summary(soil.date1)
+
+    ## Linear mixed model fit by REML ['lmerMod']
+    ## Formula: MWD ~ Treatment * Date + (1 | Block)
+    ##    Data: soil
+    ## 
+    ## REML criterion at convergence: -8.4
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.6096 -0.5821 -0.0017  0.6172  2.9457 
+    ## 
+    ## Random effects:
+    ##  Groups   Name        Variance Std.Dev.
+    ##  Block    (Intercept) 0.008332 0.09128 
+    ##  Residual             0.039961 0.19990 
+    ## Number of obs: 96, groups:  Block, 4
+    ## 
+    ## Fixed effects:
+    ##                       Estimate Std. Error t value
+    ## (Intercept)            1.05167    0.07357  14.294
+    ## Treatmentcon          -0.17167    0.08161  -2.104
+    ## DateAug                0.72833    0.08161   8.925
+    ## DateJune               0.69000    0.08161   8.455
+    ## DateOct                0.61583    0.08161   7.546
+    ## Treatmentcon:DateAug  -0.05750    0.11541  -0.498
+    ## Treatmentcon:DateJune  0.14833    0.11541   1.285
+    ## Treatmentcon:DateOct  -0.24000    0.11541  -2.079
+    ## 
+    ## Correlation of Fixed Effects:
+    ##             (Intr) Trtmnt DateAg DateJn DatOct Trt:DA Trt:DJ
+    ## Treatmentcn -0.555                                          
+    ## DateAug     -0.555  0.500                                   
+    ## DateJune    -0.555  0.500  0.500                            
+    ## DateOct     -0.555  0.500  0.500  0.500                     
+    ## Trtmntcn:DA  0.392 -0.707 -0.707 -0.354 -0.354              
+    ## Trtmntcn:DJ  0.392 -0.707 -0.354 -0.707 -0.354  0.500       
+    ## Trtmntcn:DO  0.392 -0.707 -0.354 -0.354 -0.707  0.500  0.500
+
+    plot(soil.date1)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+
+    soil.date2<-lmer(MWD~Treatment+Date+(1|Block), soil)
+    summary(soil.date2)
+
+    ## Linear mixed model fit by REML ['lmerMod']
+    ## Formula: MWD ~ Treatment + Date + (1 | Block)
+    ##    Data: soil
+    ## 
+    ## REML criterion at convergence: -5.3
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.9440 -0.5482  0.0974  0.6313  2.3773 
+    ## 
+    ## Random effects:
+    ##  Groups   Name        Variance Std.Dev.
+    ##  Block    (Intercept) 0.008169 0.09038 
+    ##  Residual             0.043872 0.20946 
+    ## Number of obs: 96, groups:  Block, 4
+    ## 
+    ## Fixed effects:
+    ##              Estimate Std. Error t value
+    ## (Intercept)   1.07031    0.06578  16.270
+    ## Treatmentcon -0.20896    0.04276  -4.887
+    ## DateAug       0.69958    0.06047  11.570
+    ## DateJune      0.76417    0.06047  12.638
+    ## DateOct       0.49583    0.06047   8.200
+    ## 
+    ## Correlation of Fixed Effects:
+    ##             (Intr) Trtmnt DateAg DateJn
+    ## Treatmentcn -0.325                     
+    ## DateAug     -0.460  0.000              
+    ## DateJune    -0.460  0.000  0.500       
+    ## DateOct     -0.460  0.000  0.500  0.500
+
+    plot(soil.date2)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-19-2.png)
+
+    anova(soil.date1,soil.date2)
+
+    ## refitting model(s) with ML (instead of REML)
+
+    ## Data: soil
+    ## Models:
+    ## soil.date2: MWD ~ Treatment + Date + (1 | Block)
+    ## soil.date1: MWD ~ Treatment * Date + (1 | Block)
+    ##            Df     AIC    BIC logLik deviance  Chisq Chi Df Pr(>Chisq)   
+    ## soil.date2  7 -12.149 5.8017 13.074  -26.149                            
+    ## soil.date1 10 -17.931 7.7128 18.965  -37.931 11.782      3   0.008169 **
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
