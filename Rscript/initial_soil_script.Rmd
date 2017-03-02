@@ -55,6 +55,8 @@ labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
 
 ### Analysis
 
+> S550: Good idea to build up the model in this way. But we can take out all the preliminary models when we write the final report.
+
 A simple model to start with:  
 - Randomized block design  
 - Ignore the transects and repeated measurements for now  
@@ -74,6 +76,7 @@ plot(soil.rbd)
 ```
 
 Adding Date to the model:
+> S550: Is the transformation completely necessary? How much of a difference does it make in the fit? It makes the results less intuitive, so perhaps it's best to leave it out unless the linearity assumption is strongly violated.
 ```{r,echo=TRUE}
 boxcox(MWD~Block+Treatment*Date, data=soil)
 soil.rbd2<-aov(sqrt(MWD)~Block+Treatment*Date, soil)
@@ -89,6 +92,7 @@ summary(lmer1.1)
 lmer1.2<-lmer(MWD~Block*Date+(1|Transect.f), soil)
 anova(lmer1.1,lmer1.2)
 ```
+> S550: The three-way intercation probably won't be necessary when choosing the final model. How sure are we that even the two-way interaction is necessary? Perhaps we could just do an additive model?
 
 Mixed-effects model with nested factor:
 ```{r}
