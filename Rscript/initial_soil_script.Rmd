@@ -163,6 +163,10 @@ acf(pc_sub)
 # Residuals are checked in the next section after imposing each linear model.
 ```
 
+> S550: Here both cover value and cover class are categorical so what does linear regression and diagnostics of the linear regression actually give?
+
+
+
 ### Analysis
 1) Model 1: all explanatory variables are fixed categorical variables
 ```{r,echo=TRUE}
