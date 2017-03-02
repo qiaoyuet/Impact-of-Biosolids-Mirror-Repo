@@ -28,10 +28,10 @@ group_by(soil,Date,Treatment) %>%
 
 ### Looking and understanding the data
 
-> S550: Great exploratory analysis. But what is the motivation behind the qqnorm plot? It might not be required for the model we are using. Also, what information does the acf() plot give us?
+> S550: Great exploratory analysis. But what is the motivation behind the qqnorm plot? It might not be required for the model we are using. Also, what information does the acf() plot give us? What do you want to show by acf(soil)?
 
 > S550: Some comments above chunks of code would be useful, to state what some of the lesser-known functions do.
-
+> S550: What you get by using this plot design?
 
 ```{r,echo=TRUE}
 hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
@@ -76,7 +76,12 @@ plot(soil.rbd)
 ```
 
 Adding Date to the model:
-> S550: Is the transformation completely necessary? How much of a difference does it make in the fit? It makes the results less intuitive, so perhaps it's best to leave it out unless the linearity assumption is strongly violated.
+
+> S550:  Why use boxcox? Is the transformation completely necessary? How much of a difference does it make in the fit? It makes the results less intuitive, so perhaps it's best to leave it out unless the linearity assumption is strongly violated.
+
+> S550: Why use sqrt(MWD) in latter part but not in the upper part?
+
+
 
 ```{r,echo=TRUE}
 boxcox(MWD~Block+Treatment*Date, data=soil)
