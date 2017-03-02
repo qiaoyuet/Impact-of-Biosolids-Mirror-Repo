@@ -31,6 +31,7 @@ group_by(soil,Date,Treatment) %>%
 > S550: Great exploratory analysis. But what is the motivation behind the qqnorm plot? It might not be required for the model we are using. Also, what information does the acf() plot give us? What do you want to show by acf(soil)?
 
 > S550: Some comments above chunks of code would be useful, to state what some of the lesser-known functions do.
+
 > S550: What you get by using this plot design?
 
 ```{r,echo=TRUE}
