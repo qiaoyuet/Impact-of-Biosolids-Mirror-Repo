@@ -212,3 +212,29 @@ soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
 cor(pc.corr[2], soil.corr[2])
 ```
 MWD and Plant Cover Value seem to have a strong negative correlation which is strange because we expect to see at least a positive correlation. The problem is that the two variable, MWD and Cover Value, do not have the same length. MWD is measured in 4 months and is calculated as an average of 3 transects. Cover Value is measured only once in June and is calculated as an average of 5 transects. In the code above, I simply take all average within blocks (4 measurements for each MWD and plant cover data) and take only June measurements from MWD data. We should fix this issue soon in next steps.
+
+### Modified model after talking with Professor
+A simple model to start with:  
+- Randomized complete block design (but block effect as random)  
+- Ignore the transects and repeated measurements for now  
+- Treat the transects as pseudo-replication
+```{r,echo=T}
+soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)
+summary(soil.rcb1)
+plot(soil.rcb1)
+soil.rcb2<-lmer(MWD~1+(1|Block), soil)
+summary(soil.rcb2)
+anova(soil.rcb1,soil.rcb2)
+```
+
+Add Date to the model
+```{r,echo=T}
+soil.date1<-lmer(MWD~Treatment*Date+(1|Block), soil)
+summary(soil.date1)
+plot(soil.date1)
+soil.date2<-lmer(MWD~Treatment+Date+(1|Block), soil)
+summary(soil.date2)
+plot(soil.date2)
+anova(soil.date1,soil.date2)
+```
+
