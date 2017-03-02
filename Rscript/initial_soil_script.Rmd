@@ -27,6 +27,9 @@ group_by(soil,Date,Treatment) %>%
 ```
 
 ### Looking and understanding the data
+
+>S550: testtest
+
 ```{r,echo=TRUE}
 hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
 
