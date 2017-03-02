@@ -218,8 +218,9 @@ A simple model to start with:
 - Randomized complete block design (but block effect as random)  
 - Ignore the transects and repeated measurements for now  
 - Treat the transects as pseudo-replication
+
 ```{r,echo=T}
-soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)
+soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)  
 summary(soil.rcb1)
 plot(soil.rcb1)
 soil.rcb2<-lmer(MWD~1+(1|Block), soil)

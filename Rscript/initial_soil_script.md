@@ -829,7 +829,7 @@ A simple model to start with:
 - Ignore the transects and repeated measurements for now  
 - Treat the transects as pseudo-replication
 
-    soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)
+    soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)  
     summary(soil.rcb1)
 
     ## Linear mixed model fit by REML ['lmerMod']
