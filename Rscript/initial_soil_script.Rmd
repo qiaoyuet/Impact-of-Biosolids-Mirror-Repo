@@ -227,6 +227,8 @@ cor(pc.corr[2], soil.corr[2])
 ```
 > S550: why use melt function here? only tapply gives the same result. But not sur about the process! 
 
+> S550: We might have to do a Spearman correlation (it's an option inside the cor() function), because one of the variables is ordinal.
+
 MWD and Plant Cover Value seem to have a strong negative correlation which is strange because we expect to see at least a positive correlation. The problem is that the two variable, MWD and Cover Value, do not have the same length. MWD is measured in 4 months and is calculated as an average of 3 transects. Cover Value is measured only once in June and is calculated as an average of 5 transects. In the code above, I simply take all average within blocks (4 measurements for each MWD and plant cover data) and take only June measurements from MWD data. We should fix this issue soon in next steps.
 
 ### Modified model after talking with Professor
