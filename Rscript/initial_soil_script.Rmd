@@ -56,6 +56,286 @@ labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
 
 ### Analysis
 
+A simple model to start with:  
+- Randomized complete block design (but block effect as random)  
+- Ignore the transects and repeated measurements for now  
+- Treat the transects as pseudo-replication
+
+```{r,echo=T}
+soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)  
+summary(soil.rcb1)
+plot(soil.rcb1)
+soil.rcb2<-lmer(MWD~1+(1|Block), soil)
+summary(soil.rcb2)
+anova(soil.rcb1,soil.rcb2)
+```
+
+Add Date to the model
+```{r,echo=T}
+soil.date1<-lmer(MWD~Treatment*Date+(1|Block), soil)
+summary(soil.date1)
+plot(soil.date1)
+soil.date2<-lmer(MWD~Treatment+Date+(1|Block), soil)
+summary(soil.date2)
+plot(soil.date2)
+anova(soil.date1,soil.date2)
+```
+
+
+
+## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
+
+### Data Exploration
+```{r,echo=TRUE}
+pc <- read.csv("plant_cover.csv", header = T)
+attach(pc)
+str(pc)
+Block.f <- as.factor(Block)
+Transect.f <- as.factor(Transect)
+
+group_by(pc,Block,Treatment) %>%
+  summarise(mean(Cover.value), sd(Cover.value))
+
+ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
+
+ggplot(aes(x = Block, y = Cover.class, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Class", title = "Change in Cover Class over Different Blocks")
+
+# From the plots above we can see Cover Class and Cover Value are almost the same in terms of changes with Treatment and within Blocks. We use Cover Value because it is closer to a continuous variable.
+```
+
+### Diagnostics: checking assumptions of linear models
+```{r,echo=TRUE}
+plot(Treatment, Cover.value)
+# similar variability of cover value within two levels of treatment although strange behaviour of Control group
+
+qqnorm(Cover.value)
+# strange behaviour due to the fact that cover value is discrete
+hist(Cover.value)
+# not quite normal, heavy right tail
+
+# I tried the following transformations to reduce right skewness but it does not seem to work well. I continued with non-transfromed response value in the analysis below, but this should be a concern?
+hist(1/Cover.value)
+Cover.value.log <- log(Cover.value)
+hist(Cover.value.log)
+Cover.value.sqrt <- sqrt(Cover.value)
+hist(Cover.value.sqrt)
+
+pc_sub <- pc[ ,c(3,4,5,9)]
+acf(pc_sub)
+# no multicolinearity within explnatory variables
+
+# Residuals are checked in the next section after imposing each linear model.
+```
+
+> S550: Here both cover value and cover class are categorical so what does linear regression and diagnostics of the linear regression actually give? How can we check multicolinearity using acf()?
+
+
+
+
+### Analysis
+
+```{r}
+pc <- read.csv("plant_cover.csv")
+pc$Block <- as.factor(pc$Block)
+pc.subset <- subset(pc, Species == "POPR")
+subset.cv <- pc.subset[ ,c(3,4,9)]
+
+Bio_B1_original1 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+  select(Block)
+zero_B <- list(rep(1, 19))
+a<-rbind(zero_B, Bio_B1_original1)
+
+Bio_B1_original2 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+  select(Treatment)
+zero_T <- list(rep("Biosolids", 19))
+b<-rbind(zero_T, Bio_B1_original2)
+
+Bio_B1_original3 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 19))
+c<-rbind(zero_C, Bio_B1_original3)
+
+Bio_B1 <- cbind(a,b,c)
+
+#----
+
+Bio_B2_original1 <- 
+  filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+  select(Block)
+zero_B <- list(rep(2, 36))
+a<-rbind(zero_B, Bio_B2_original1)
+
+Bio_B2_original2 <- 
+  filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+  select(Treatment)
+zero_T <- list(rep("Biosolids", 36))
+b<-rbind(zero_T, Bio_B2_original2)
+
+Bio_B2_original3 <- 
+  filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 36))
+c<-rbind(zero_C, Bio_B2_original3)
+
+Bio_B2 <- cbind(a,b,c)
+
+#------
+
+Bio_B3_original1 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+  select(Block)
+zero_B <- list(rep(1, 21))
+a<-rbind(zero_B, Bio_B3_original1)
+
+Bio_B3_original2 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+  select(Treatment)
+zero_T <- list(rep("Biosolids", 21))
+b<-rbind(zero_T, Bio_B3_original2)
+
+Bio_B3_original3 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 21))
+c<-rbind(zero_C, Bio_B3_original3)
+
+Bio_B3 <- cbind(a,b,c)
+
+#-----------------------
+Bio_B4_original1 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+  select(Block)
+zero_B <- list(rep(4, 9))
+a<-rbind(zero_B, Bio_B4_original1)
+
+Bio_B4_original2 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+  select(Treatment)
+zero_T <- list(rep("Biosolids", 9))
+b<-rbind(zero_T, Bio_B4_original2)
+
+Bio_B4_original3 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 9))
+c<-rbind(zero_C, Bio_B4_original3)
+
+Bio_B4 <- cbind(a,b,c)
+
+#-----------------------
+
+Con_B1_original1 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+  select(Block)
+zero_B <- list(rep(1, 47))
+a<-rbind(zero_B, Con_B1_original1)
+
+Con_B1_original2 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+  select(Treatment)
+zero_T <- list(rep("Control", 47))
+b<-rbind(zero_T, Con_B1_original2)
+
+Con_B1_original3 <- 
+  filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 47))
+c<-rbind(zero_C, Con_B1_original3)
+
+Con_B1 <- cbind(a,b,c)
+
+#----
+
+a <- matrix(2, 50, 1)
+
+b <- matrix("Control", 50,1)
+
+c <- matrix(0, 50,1)
+
+Con_B2<-data.frame(cbind(a,b,c))
+colnames(Con_B2)[1]<-"Block"
+colnames(Con_B2)[2]<-"Treatment"
+colnames(Con_B2)[3]<-"Cover.value"
+
+
+
+#-------
+
+Con_B3_original1 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+  select(Block)
+zero_B <- list(rep(1, 49))
+a<-rbind(zero_B, Con_B3_original1)
+
+Con_B3_original2 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+  select(Treatment)
+zero_T <- list(rep("Control", 49))
+b<-rbind(zero_T, Con_B3_original2)
+
+Con_B3_original3 <- 
+  filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 49))
+c<-rbind(zero_C, Con_B3_original3)
+
+Con_B3 <- cbind(a,b,c)
+
+
+#-------------------
+
+
+Con_B4_original1 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+  select(Block)
+zero_B <- list(rep(4, 49))
+a<-rbind(zero_B, Con_B4_original1)
+
+Con_B4_original2 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+  select(Treatment)
+zero_T <- list(rep("Control", 49))
+b<-rbind(zero_T, Con_B4_original2)
+
+Con_B4_original3 <- 
+  filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+  select(Cover.value)
+zero_C <- list(rep(0, 49))
+c<-rbind(zero_C, Con_B4_original3)
+
+Con_B4 <- cbind(a,b,c)
+
+#----------------------
+dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
+
+model1 <- lmer(as.numeric(Cover.value) ~ Treatment + (1|Block), data = dat)
+model2 <- lmer(as.numeric(Cover.value) ~ (1|Block), data = dat)
+anova(model1, model2)
+```
+
+
+### Correlation between Plant Cover and MWD
+```{r}
+pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
+soil.june <- soil %>%
+  filter(Date == "June")
+soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
+cor(pc.corr[2], soil.corr[2])
+```
+> S550: why use melt function here? only tapply gives the same result. But not sur about the process! 
+
+> S550: We might have to do a Spearman correlation (it's an option inside the cor() function), because one of the variables is ordinal.
+
+MWD and Plant Cover Value seem to have a strong negative correlation which is strange because we expect to see at least a positive correlation. The problem is that the two variable, MWD and Cover Value, do not have the same length. MWD is measured in 4 months and is calculated as an average of 3 transects. Cover Value is measured only once in June and is calculated as an average of 5 transects. In the code above, I simply take all average within blocks (4 measurements for each MWD and plant cover data) and take only June measurements from MWD data. We should fix this issue soon in next steps.
+
+
+### Appendix (model history)
+
+#### Part 1
+
 > S550: Good idea to build up the model in this way. But we can take out all the preliminary models when we write the final report.
 
 A simple model to start with:  
@@ -120,56 +400,7 @@ lmer3.2<-lmer(MWD~Block*Date+(Date|Treatment:Transect.f), soil)
 anova(lmer3.1,lmer3.2)
 ```
 
-## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
-
-### Data Exploration
-```{r,echo=TRUE}
-pc <- read.csv("plant_cover.csv", header = T)
-attach(pc)
-str(pc)
-Block.f <- as.factor(Block)
-Transect.f <- as.factor(Transect)
-
-group_by(pc,Block,Treatment) %>%
-  summarise(mean(Cover.value), sd(Cover.value))
-
-ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
-
-ggplot(aes(x = Block, y = Cover.class, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Class", title = "Change in Cover Class over Different Blocks")
-
-# From the plots above we can see Cover Class and Cover Value are almost the same in terms of changes with Treatment and within Blocks. We use Cover Value because it is closer to a continuous variable.
-```
-
-### Diagnostics: checking assumptions of linear models
-```{r,echo=TRUE}
-plot(Treatment, Cover.value)
-# similar variability of cover value within two levels of treatment although strange behaviour of Control group
-
-qqnorm(Cover.value)
-# strange behaviour due to the fact that cover value is discrete
-hist(Cover.value)
-# not quite normal, heavy right tail
-
-# I tried the following transformations to reduce right skewness but it does not seem to work well. I continued with non-transfromed response value in the analysis below, but this should be a concern?
-hist(1/Cover.value)
-Cover.value.log <- log(Cover.value)
-hist(Cover.value.log)
-Cover.value.sqrt <- sqrt(Cover.value)
-hist(Cover.value.sqrt)
-
-pc_sub <- pc[ ,c(3,4,5,9)]
-acf(pc_sub)
-# no multicolinearity within explnatory variables
-
-# Residuals are checked in the next section after imposing each linear model.
-```
-
-> S550: Here both cover value and cover class are categorical so what does linear regression and diagnostics of the linear regression actually give? How can we check multicolinearity using acf()?
-
-
-
-
-### Analysis
+#### Part 2
 1) Model 1: all explanatory variables are fixed categorical variables
 ```{r,echo=TRUE}
 model1 <- aov(Cover.value ~ Block.f * Treatment * Transect.f)
@@ -215,45 +446,3 @@ I tried to include random effects in ordinal regression model but polr() does no
 ```{r}
 detach(pc)
 ```
-
-
-### Correlation between Plant Cover and MWD
-```{r}
-pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
-soil.june <- soil %>%
-  filter(Date == "June")
-soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
-cor(pc.corr[2], soil.corr[2])
-```
-> S550: why use melt function here? only tapply gives the same result. But not sur about the process! 
-
-> S550: We might have to do a Spearman correlation (it's an option inside the cor() function), because one of the variables is ordinal.
-
-MWD and Plant Cover Value seem to have a strong negative correlation which is strange because we expect to see at least a positive correlation. The problem is that the two variable, MWD and Cover Value, do not have the same length. MWD is measured in 4 months and is calculated as an average of 3 transects. Cover Value is measured only once in June and is calculated as an average of 5 transects. In the code above, I simply take all average within blocks (4 measurements for each MWD and plant cover data) and take only June measurements from MWD data. We should fix this issue soon in next steps.
-
-### Modified model after talking with Professor
-A simple model to start with:  
-- Randomized complete block design (but block effect as random)  
-- Ignore the transects and repeated measurements for now  
-- Treat the transects as pseudo-replication
-
-```{r,echo=T}
-soil.rcb1<-lmer(MWD~Treatment+(1|Block), soil)  
-summary(soil.rcb1)
-plot(soil.rcb1)
-soil.rcb2<-lmer(MWD~1+(1|Block), soil)
-summary(soil.rcb2)
-anova(soil.rcb1,soil.rcb2)
-```
-
-Add Date to the model
-```{r,echo=T}
-soil.date1<-lmer(MWD~Treatment*Date+(1|Block), soil)
-summary(soil.date1)
-plot(soil.date1)
-soil.date2<-lmer(MWD~Treatment+Date+(1|Block), soil)
-summary(soil.date2)
-plot(soil.date2)
-anova(soil.date1,soil.date2)
-```
-
