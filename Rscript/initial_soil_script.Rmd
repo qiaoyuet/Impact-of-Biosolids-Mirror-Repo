@@ -90,8 +90,6 @@ anova(soil.date1,soil.date2)
 pc <- read.csv("plant_cover.csv", header = T)
 attach(pc)
 str(pc)
-Block.f <- as.factor(Block)
-Transect.f <- as.factor(Transect)
 
 group_by(pc,Block,Treatment) %>%
   summarise(mean(Cover.value), sd(Cover.value))
@@ -131,11 +129,9 @@ acf(pc_sub)
 
 
 
-
 ### Analysis
 
 ```{r}
-pc <- read.csv("plant_cover.csv")
 pc$Block <- as.factor(pc$Block)
 pc.subset <- subset(pc, Species == "POPR")
 subset.cv <- pc.subset[ ,c(3,4,9)]
@@ -314,6 +310,8 @@ dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
 model1 <- lmer(as.numeric(Cover.value) ~ Treatment + (1|Block), data = dat)
 model2 <- lmer(as.numeric(Cover.value) ~ (1|Block), data = dat)
 anova(model1, model2)
+
+detach(pc)
 ```
 
 
@@ -345,16 +343,16 @@ A simple model to start with:
 - Assume no block interaction effects
 
 Looking at the data in terms of treatment and block:
-```{r,echo=TRUE}
-interaction.plot(soil$Treatment, soil$Block, soil$MWD, xlab="Treatment", ylab="MWD", main="Change in MWD over Treatments by Block")
-```
 
-```{r,echo=TRUE}
+interaction.plot(soil$Treatment, soil$Block, soil$MWD, xlab="Treatment", ylab="MWD", main="Change in MWD over Treatments by Block")
+
+
+
 boxcox(MWD~Block+Treatment, data=soil) # To see if transformation on y is needed
 soil.rbd<-aov(MWD~Block+Treatment, soil)
 summary(soil.rbd)
 plot(soil.rbd)
-```
+
 
 Adding Date to the model:
 
@@ -363,61 +361,60 @@ Adding Date to the model:
 > S550: Why use sqrt(MWD) in latter part but not in the upper part?
 
 
-
-```{r,echo=TRUE}
 boxcox(MWD~Block+Treatment*Date, data=soil)
 soil.rbd2<-aov(sqrt(MWD)~Block+Treatment*Date, soil)
 summary(soil.rbd2)
 plot(soil.rbd2)
-```
+
 
 Mixed-effects model:
-```{r}
+
+Transect.f<-as.factor(soil$Transect)
 lmer1.1<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
 summary(lmer1.1)
 
 lmer1.2<-lmer(MWD~Block*Date+(1|Transect.f), soil)
 anova(lmer1.1,lmer1.2)
-```
+
 > S550: The three-way intercation probably won't be necessary when choosing the final model. How sure are we that even the two-way interaction is necessary? Perhaps we could just do an additive model?
 
 Mixed-effects model with nested factor:
-```{r}
+
 lmer2.1<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
 summary(lmer2.1)
 
 lmer2.2<-lmer(MWD~Block*Date+(1|Treatment:Transect.f), soil)
 anova(lmer2.1,lmer2.2)
-```
+
 
 Mixed-effects model with nested factor and repeated measurements:  
 (I am not sure if I formulate the model I want with correct R syntax. I am thinking about fixed block effect, fixed treatment effect, random transect effect, transect factor nested within treatment factor, transect was measured repeatedly over date.)
-```{r}
+
 lmer3.1<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f), soil)
 summary(lmer3.1)
 
 lmer3.2<-lmer(MWD~Block*Date+(Date|Treatment:Transect.f), soil)
 anova(lmer3.1,lmer3.2)
-```
+
 
 #### Part 2
 1) Model 1: all explanatory variables are fixed categorical variables
-```{r,echo=TRUE}
+
 model1 <- aov(Cover.value ~ Block.f * Treatment * Transect.f)
 summary(model1)
 plot(resid(model1))
 # lm output for comparing each level
 summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
-```
+
 Comment: Treatment effect seems to be significant. Sum of squares for residuals is very large, indicating a lot of variation is unexplained and the significance of treatment might not be true. No obvious pattern from residual plot.
 
 2) Model 2: Transect is now a random effect, Block and Treatment are fixed effects
-```{r}
+
 model2.1 <- lmer(Cover.value ~ Treatment+Block.f+(1|Transect.f))
 summary(model2.1)
 model2.2 <- lmer(Cover.value ~ 1+Block+(1|Transect.f))
 anova(model2.2, model2.1)
-```
+
 
 > S550: Not sure if the response variable is categorical then usual linear mixed effect model will be worthy or not? Why you use Block.f for the model2.1 and Block for the model2.2? Also need to clarify about random intercept and random slope model.
 
@@ -426,23 +423,23 @@ Comment: Treatment effect is still significant at the same significance level. F
 Question: I did not use aov() because I am not sure how to read summary of aov output properly when there are three explanatory variables. It contains strange behaviours. Not sure if aov output would be more useful here.
 
 3) Model 3: Mixed effects models with nested structure
-```{r}
+
 model3.1 <- lmer(Cover.value ~ Treatment+Block.f+(1|Treatment:Transect.f))
 summary(model3.1)
 model3.2 <- lmer(Cover.value ~ 1+Block.f+(1|Treatment:Transect.f))
 anova(model3.1, model3.2)
-```
+
 Comment: Treatment is still a significant factor in this mixed effect nested model. Same as before, residual variance is still large.
 
 4) Quick comment on Ordinal regression model to incorporate that Cover.value is a discrete dependent variable
-```{r}
+
 Cover.value.f <- as.factor(Cover.value)
 model4.1 <- polr(Cover.value.f ~ Treatment+Block.f+Transect.f, Hess = T)
 summary(model4.1)
 model4.2 <- polr(Cover.value.f ~ 1+Block.f+Transect.f, Hess = T)
 anova(model4.1, model4.2)
-```
+
 I tried to include random effects in ordinal regression model but polr() does not recognize the same syntax as above. In addition I get confused when comparing two ordinal regression models as anova() shows a p-value of 0. I think we should discuss whether it is enough to assume that Cover.value is contineous before exploring more about ordinal regression?
-```{r}
+
 detach(pc)
-```
+
