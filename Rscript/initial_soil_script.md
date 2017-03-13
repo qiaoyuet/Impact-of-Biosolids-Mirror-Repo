@@ -1,5 +1,5 @@
-LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
----------------------------------------
+LONG TERM IMPACTS OF BIOSOLIDS ON MWD
+-------------------------------------
 
 ### Explore the data
 
@@ -99,11 +99,16 @@ LONG TERM IMPACTS OF BIOSOLIDS ON SOILS
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-5.png)
 
-    ggplot(soil, aes(x = Date, y = MWD, group = Treatment, colour = Treatment)) +
-    stat_summary(fun.y="mean", geom = "line") +
-    labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
+    Date.f = factor(soil$Date,levels(soil$Date)[c(1, 3, 2, 4)])
+    ggplot(soil, aes(x = Date.f, y = MWD, group = Treatment, colour = Treatment)) +
+      stat_summary(fun.y="mean", geom = "line") +
+      labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-6.png)
+
+    interaction.plot(soil$Block,soil$Treatment,soil$MWD)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-7.png)
 
 ### Analysis
 
@@ -144,11 +149,11 @@ A simple model to start with:
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
-    soil.rcb2<-lmer(MWD~1+(1|Block), soil)
+    soil.rcb2<-lmer(MWD~(1|Block), soil)
     summary(soil.rcb2)
 
     ## Linear mixed model fit by REML ['lmerMod']
-    ## Formula: MWD ~ 1 + (1 | Block)
+    ## Formula: MWD ~ (1 | Block)
     ##    Data: soil
     ## 
     ## REML criterion at convergence: 93.5
@@ -167,13 +172,17 @@ A simple model to start with:
     ##             Estimate Std. Error t value
     ## (Intercept)  1.45573    0.04999   29.12
 
+    plot(soil.rcb2)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-4-2.png)
+
     anova(soil.rcb1,soil.rcb2)
 
     ## refitting model(s) with ML (instead of REML)
 
     ## Data: soil
     ## Models:
-    ## soil.rcb2: MWD ~ 1 + (1 | Block)
+    ## soil.rcb2: MWD ~ (1 | Block)
     ## soil.rcb1: MWD ~ Treatment + (1 | Block)
     ##           Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)   
     ## soil.rcb2  3 95.224 102.92 -44.612   89.224                            
@@ -183,8 +192,62 @@ A simple model to start with:
 
 Add Date to the model
 
-    soil.date1<-lmer(MWD~Treatment*Date+(1|Block), soil)
-    summary(soil.date1)
+    soil.date<-lmer(MWD~Treatment+Date+(1|Block), soil)
+    summary(soil.date)
+
+    ## Linear mixed model fit by REML ['lmerMod']
+    ## Formula: MWD ~ Treatment + Date + (1 | Block)
+    ##    Data: soil
+    ## 
+    ## REML criterion at convergence: -5.3
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -2.9440 -0.5482  0.0974  0.6313  2.3773 
+    ## 
+    ## Random effects:
+    ##  Groups   Name        Variance Std.Dev.
+    ##  Block    (Intercept) 0.008169 0.09038 
+    ##  Residual             0.043872 0.20946 
+    ## Number of obs: 96, groups:  Block, 4
+    ## 
+    ## Fixed effects:
+    ##              Estimate Std. Error t value
+    ## (Intercept)   1.07031    0.06578  16.270
+    ## Treatmentcon -0.20896    0.04276  -4.887
+    ## DateAug       0.69958    0.06047  11.570
+    ## DateJune      0.76417    0.06047  12.638
+    ## DateOct       0.49583    0.06047   8.200
+    ## 
+    ## Correlation of Fixed Effects:
+    ##             (Intr) Trtmnt DateAg DateJn
+    ## Treatmentcn -0.325                     
+    ## DateAug     -0.460  0.000              
+    ## DateJune    -0.460  0.000  0.500       
+    ## DateOct     -0.460  0.000  0.500  0.500
+
+    plot(soil.date)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
+    anova(soil.rcb1,soil.date)
+
+    ## refitting model(s) with ML (instead of REML)
+
+    ## Data: soil
+    ## Models:
+    ## soil.rcb1: MWD ~ Treatment + (1 | Block)
+    ## soil.date: MWD ~ Treatment + Date + (1 | Block)
+    ##           Df     AIC     BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
+    ## soil.rcb1  4  89.807 100.065 -40.904   81.807                             
+    ## soil.date  7 -12.149   5.802  13.074  -26.149 107.96      3  < 2.2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Add interaction effect
+
+    soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
+    summary(soil.mult)
 
     ## Linear mixed model fit by REML ['lmerMod']
     ## Formula: MWD ~ Treatment * Date + (1 | Block)
@@ -223,59 +286,21 @@ Add Date to the model
     ## Trtmntcn:DJ  0.392 -0.707 -0.354 -0.707 -0.354  0.500       
     ## Trtmntcn:DO  0.392 -0.707 -0.354 -0.354 -0.707  0.500  0.500
 
-    plot(soil.date1)
+    plot(soil.mult)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
-    soil.date2<-lmer(MWD~Treatment+Date+(1|Block), soil)
-    summary(soil.date2)
-
-    ## Linear mixed model fit by REML ['lmerMod']
-    ## Formula: MWD ~ Treatment + Date + (1 | Block)
-    ##    Data: soil
-    ## 
-    ## REML criterion at convergence: -5.3
-    ## 
-    ## Scaled residuals: 
-    ##     Min      1Q  Median      3Q     Max 
-    ## -2.9440 -0.5482  0.0974  0.6313  2.3773 
-    ## 
-    ## Random effects:
-    ##  Groups   Name        Variance Std.Dev.
-    ##  Block    (Intercept) 0.008169 0.09038 
-    ##  Residual             0.043872 0.20946 
-    ## Number of obs: 96, groups:  Block, 4
-    ## 
-    ## Fixed effects:
-    ##              Estimate Std. Error t value
-    ## (Intercept)   1.07031    0.06578  16.270
-    ## Treatmentcon -0.20896    0.04276  -4.887
-    ## DateAug       0.69958    0.06047  11.570
-    ## DateJune      0.76417    0.06047  12.638
-    ## DateOct       0.49583    0.06047   8.200
-    ## 
-    ## Correlation of Fixed Effects:
-    ##             (Intr) Trtmnt DateAg DateJn
-    ## Treatmentcn -0.325                     
-    ## DateAug     -0.460  0.000              
-    ## DateJune    -0.460  0.000  0.500       
-    ## DateOct     -0.460  0.000  0.500  0.500
-
-    plot(soil.date2)
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-5-2.png)
-
-    anova(soil.date1,soil.date2)
+    anova(soil.date,soil.mult)
 
     ## refitting model(s) with ML (instead of REML)
 
     ## Data: soil
     ## Models:
-    ## soil.date2: MWD ~ Treatment + Date + (1 | Block)
-    ## soil.date1: MWD ~ Treatment * Date + (1 | Block)
-    ##            Df     AIC    BIC logLik deviance  Chisq Chi Df Pr(>Chisq)   
-    ## soil.date2  7 -12.149 5.8017 13.074  -26.149                            
-    ## soil.date1 10 -17.931 7.7128 18.965  -37.931 11.782      3   0.008169 **
+    ## soil.date: MWD ~ Treatment + Date + (1 | Block)
+    ## soil.mult: MWD ~ Treatment * Date + (1 | Block)
+    ##           Df     AIC    BIC logLik deviance  Chisq Chi Df Pr(>Chisq)   
+    ## soil.date  7 -12.149 5.8017 13.074  -26.149                            
+    ## soil.mult 10 -17.931 7.7128 18.965  -37.931 11.782      3   0.008169 **
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -318,11 +343,11 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
     ggplot(aes(x = Block, y = Cover.class, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Class", title = "Change in Cover Class over Different Blocks")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-6-2.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
 
     # From the plots above we can see Cover Class and Cover Value are almost the same in terms of changes with Treatment and within Blocks. We use Cover Value because it is closer to a continuous variable.
 
@@ -330,40 +355,40 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     plot(Treatment, Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     # similar variability of cover value within two levels of treatment although strange behaviour of Control group
 
     qqnorm(Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-2.png)
 
     # strange behaviour due to the fact that cover value is discrete
     hist(Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-3.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-3.png)
 
     # not quite normal, heavy right tail
 
     # I tried the following transformations to reduce right skewness but it does not seem to work well. I continued with non-transfromed response value in the analysis below, but this should be a concern?
     hist(1/Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-4.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
 
     Cover.value.log <- log(Cover.value)
     hist(Cover.value.log)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-5.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-5.png)
 
     Cover.value.sqrt <- sqrt(Cover.value)
     hist(Cover.value.sqrt)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-6.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-6.png)
 
     pc_sub <- pc[ ,c(3,4,5,9)]
     acf(pc_sub)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-7.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-7.png)
 
     # no multicolinearity within explnatory variables
 
@@ -374,6 +399,212 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 > actually give? How can we check multicolinearity using acf()?
 
 ### Analysis
+
+    pc.subset <- subset(pc, Species == "POPR")
+
+    block<-matrix(c(1,2,3,4,1,2,3,4), 8, 1)
+    tr<-matrix(c(rep("Biosolids",4), rep("Control",4)), 8, 1)
+
+    cv.bio<-matrix(NA,4,1)
+    for (i in 1:4) {
+      comb<-filter(pc.subset, Block == i & Treatment == "Biosolids")
+        avg<-sum(comb$Cover.value)/50
+        cv.bio[i,]<-avg
+    }
+
+    cv.con<-matrix(NA,4,1)
+    for (i in 1:4) {
+      comb<-filter(pc.subset, Block == i & Treatment == "Control")
+      avg<-sum(comb$Cover.value)/50
+      cv.con[i,]<-avg
+    }
+
+    cv<-rbind(cv.bio, cv.con)
+    avg.data<-data.frame(cbind(block,tr,cv))
+    colnames(avg.data)[1]<-"Block"
+    colnames(avg.data)[2]<-"Treatment"
+    colnames(avg.data)[3]<-"Cover.value"
+
+    cv.model <- lm(as.numeric(as.character(Cover.value)) ~ Treatment + Block, data = avg.data)
+    anova(cv.model)
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: as.numeric(as.character(Cover.value))
+    ##           Df  Sum Sq Mean Sq F value  Pr(>F)  
+    ## Treatment  1 1324.84 1324.84 14.0908 0.03303 *
+    ## Block      3  291.96   97.32  1.0351 0.48902  
+    ## Residuals  3  282.06   94.02                  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+    summary(cv.model)
+
+    ## 
+    ## Call:
+    ## lm(formula = as.numeric(as.character(Cover.value)) ~ Treatment + 
+    ##     Block, data = avg.data)
+    ## 
+    ## Residuals:
+    ##       1       2       3       4       5       6       7       8 
+    ## -1.2188 -7.9937  0.5313  8.6813  1.2188  7.9937 -0.5313 -8.6813 
+    ## 
+    ## Coefficients:
+    ##                  Estimate Std. Error t value Pr(>|t|)  
+    ## (Intercept)        24.669      7.666   3.218   0.0487 *
+    ## TreatmentControl  -25.737      6.856  -3.754   0.0330 *
+    ## Block2             -6.925      9.696  -0.714   0.5267  
+    ## Block3              1.650      9.696   0.170   0.8757  
+    ## Block4             10.050      9.696   1.036   0.3762  
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 9.696 on 3 degrees of freedom
+    ## Multiple R-squared:  0.8515, Adjusted R-squared:  0.6534 
+    ## F-statistic: 4.299 on 4 and 3 DF,  p-value: 0.1304
+
+### Correlation between Plant Cover and MWD
+
+    a<-group_by(soil,Block,Treatment) %>%
+      summarise(mean(MWD))
+    b<-a$`mean(MWD)`
+    mean.MWD<-c(b[1], b[3], b[5], b[7], b[2], b[4], b[6], b[8])
+    mean.cv<-as.numeric(as.character(avg.data$Cover.value))
+    cor(mean.MWD, mean.cv)
+
+    ## [1] 0.6447241
+
+### Appendix (model history)
+
+#### Part 1
+
+> S550: Good idea to build up the model in this way. But we can take out
+> all the preliminary models when we write the final report.
+
+A simple model to start with:  
+- Randomized block design  
+- Ignore the transects and repeated measurements for now  
+- Treat the data collected from the transects as random samples  
+- Assume no block interaction effects
+
+Looking at the data in terms of treatment and block:
+
+interaction.plot(soil*T**r**e**a**t**m**e**n**t*, *s**o**i**l*Block,
+soil$MWD, xlab="Treatment", ylab="MWD", main="Change in MWD over
+Treatments by Block")
+
+boxcox(MWD~Block+Treatment, data=soil) \# To see if transformation on y
+is needed soil.rbd\<-aov(MWD~Block+Treatment, soil) summary(soil.rbd)
+plot(soil.rbd)
+
+Adding Date to the model:
+
+> S550: Why use boxcox? Is the transformation completely necessary? How
+> much of a difference does it make in the fit? It makes the results
+> less intuitive, so perhaps it's best to leave it out unless the
+> linearity assumption is strongly violated.
+
+> S550: Why use sqrt(MWD) in latter part but not in the upper part?
+
+boxcox(MWD~Block+Treatment*Date, data=soil)
+soil.rbd2\<-aov(sqrt(MWD)~Block+Treatment*Date, soil) summary(soil.rbd2)
+plot(soil.rbd2)
+
+Mixed-effects model:
+
+Transect.f\<-as.factor(soil$Transect)
+lmer1.1\<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
+summary(lmer1.1)
+
+lmer1.2\<-lmer(MWD~Block\*Date+(1|Transect.f), soil)
+anova(lmer1.1,lmer1.2)
+
+> S550: The three-way intercation probably won't be necessary when
+> choosing the final model. How sure are we that even the two-way
+> interaction is necessary? Perhaps we could just do an additive model?
+
+Mixed-effects model with nested factor:
+
+lmer2.1\<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
+summary(lmer2.1)
+
+lmer2.2\<-lmer(MWD~Block\*Date+(1|Treatment:Transect.f), soil)
+anova(lmer2.1,lmer2.2)
+
+Mixed-effects model with nested factor and repeated measurements:  
+(I am not sure if I formulate the model I want with correct R syntax. I
+am thinking about fixed block effect, fixed treatment effect, random
+transect effect, transect factor nested within treatment factor,
+transect was measured repeatedly over date.)
+
+lmer3.1\<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f),
+soil) summary(lmer3.1)
+
+lmer3.2\<-lmer(MWD~Block\*Date+(Date|Treatment:Transect.f), soil)
+anova(lmer3.1,lmer3.2)
+
+#### Part 2
+
+1.  Model 1: all explanatory variables are fixed categorical variables
+
+model1 \<- aov(Cover.value ~ Block.f \* Treatment \* Transect.f)
+summary(model1) plot(resid(model1)) \# lm output for comparing each
+level summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
+
+Comment: Treatment effect seems to be significant. Sum of squares for
+residuals is very large, indicating a lot of variation is unexplained
+and the significance of treatment might not be true. No obvious pattern
+from residual plot.
+
+1.  Model 2: Transect is now a random effect, Block and Treatment are
+    fixed effects
+
+model2.1 \<- lmer(Cover.value ~ Treatment+Block.f+(1|Transect.f))
+summary(model2.1) model2.2 \<- lmer(Cover.value ~
+1+Block+(1|Transect.f)) anova(model2.2, model2.1)
+
+> S550: Not sure if the response variable is categorical then usual
+> linear mixed effect model will be worthy or not? Why you use Block.f
+> for the model2.1 and Block for the model2.2? Also need to clarify
+> about random intercept and random slope model.
+
+Comment: Treatment effect is still significant at the same significance
+level. From the lm output, A small proportion of randomness is explained
+by Transect effects but variance of residuals is still quite large. The
+residuals seem to be centered at 0 from the summary of lm output: scaled
+residuals.
+
+Question: I did not use aov() because I am not sure how to read summary
+of aov output properly when there are three explanatory variables. It
+contains strange behaviours. Not sure if aov output would be more useful
+here.
+
+1.  Model 3: Mixed effects models with nested structure
+
+model3.1 \<- lmer(Cover.value ~
+Treatment+Block.f+(1|Treatment:Transect.f)) summary(model3.1) model3.2
+\<- lmer(Cover.value ~ 1+Block.f+(1|Treatment:Transect.f))
+anova(model3.1, model3.2)
+
+Comment: Treatment is still a significant factor in this mixed effect
+nested model. Same as before, residual variance is still large.
+
+1.  Quick comment on Ordinal regression model to incorporate that
+    Cover.value is a discrete dependent variable
+
+Cover.value.f \<- as.factor(Cover.value) model4.1 \<- polr(Cover.value.f
+~ Treatment+Block.f+Transect.f, Hess = T) summary(model4.1) model4.2 \<-
+polr(Cover.value.f ~ 1+Block.f+Transect.f, Hess = T) anova(model4.1,
+model4.2)
+
+I tried to include random effects in ordinal regression model but polr()
+does not recognize the same syntax as above. In addition I get confused
+when comparing two ordinal regression models as anova() shows a p-value
+of 0. I think we should discuss whether it is enough to assume that
+Cover.value is contineous before exploring more about ordinal
+regression?
+
+detach(pc)
 
     pc$Block <- as.factor(pc$Block)
     pc.subset <- subset(pc, Species == "POPR")
@@ -568,8 +799,6 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     detach(pc)
 
-### Correlation between Plant Cover and MWD
-
     pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
     soil.june <- soil %>%
       filter(Date == "June")
@@ -578,12 +807,6 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     ##            value
     ## value -0.9843717
-
-> S550: why use melt function here? only tapply gives the same result.
-> But not sur about the process!
-
-> S550: We might have to do a Spearman correlation (it's an option
-> inside the cor() function), because one of the variables is ordinal.
 
 MWD and Plant Cover Value seem to have a strong negative correlation
 which is strange because we expect to see at least a positive
@@ -595,134 +818,8 @@ above, I simply take all average within blocks (4 measurements for each
 MWD and plant cover data) and take only June measurements from MWD data.
 We should fix this issue soon in next steps.
 
-### Appendix (model history)
+> S550: why use melt function here? only tapply gives the same result.
+> But not sur about the process!
 
-#### Part 1
-
-> S550: Good idea to build up the model in this way. But we can take out
-> all the preliminary models when we write the final report.
-
-A simple model to start with:  
-- Randomized block design  
-- Ignore the transects and repeated measurements for now  
-- Treat the data collected from the transects as random samples  
-- Assume no block interaction effects
-
-Looking at the data in terms of treatment and block:
-
-interaction.plot(soil*T**r**e**a**t**m**e**n**t*, *s**o**i**l*Block,
-soil$MWD, xlab="Treatment", ylab="MWD", main="Change in MWD over
-Treatments by Block")
-
-boxcox(MWD~Block+Treatment, data=soil) \# To see if transformation on y
-is needed soil.rbd\<-aov(MWD~Block+Treatment, soil) summary(soil.rbd)
-plot(soil.rbd)
-
-Adding Date to the model:
-
-> S550: Why use boxcox? Is the transformation completely necessary? How
-> much of a difference does it make in the fit? It makes the results
-> less intuitive, so perhaps it's best to leave it out unless the
-> linearity assumption is strongly violated.
-
-> S550: Why use sqrt(MWD) in latter part but not in the upper part?
-
-boxcox(MWD~Block+Treatment*Date, data=soil)
-soil.rbd2\<-aov(sqrt(MWD)~Block+Treatment*Date, soil) summary(soil.rbd2)
-plot(soil.rbd2)
-
-Mixed-effects model:
-
-Transect.f\<-as.factor(soil$Transect)
-lmer1.1\<-lmer(MWD~Block*Date*Treatment+(1|Transect.f), soil)
-summary(lmer1.1)
-
-lmer1.2\<-lmer(MWD~Block\*Date+(1|Transect.f), soil)
-anova(lmer1.1,lmer1.2)
-
-> S550: The three-way intercation probably won't be necessary when
-> choosing the final model. How sure are we that even the two-way
-> interaction is necessary? Perhaps we could just do an additive model?
-
-Mixed-effects model with nested factor:
-
-lmer2.1\<-lmer(MWD~Block*Date*Treatment+(1|Treatment:Transect.f), soil)
-summary(lmer2.1)
-
-lmer2.2\<-lmer(MWD~Block\*Date+(1|Treatment:Transect.f), soil)
-anova(lmer2.1,lmer2.2)
-
-Mixed-effects model with nested factor and repeated measurements:  
-(I am not sure if I formulate the model I want with correct R syntax. I
-am thinking about fixed block effect, fixed treatment effect, random
-transect effect, transect factor nested within treatment factor,
-transect was measured repeatedly over date.)
-
-lmer3.1\<-lmer(MWD~Block*Date*Treatment+(Date|Treatment:Transect.f),
-soil) summary(lmer3.1)
-
-lmer3.2\<-lmer(MWD~Block\*Date+(Date|Treatment:Transect.f), soil)
-anova(lmer3.1,lmer3.2)
-
-#### Part 2
-
-1.  Model 1: all explanatory variables are fixed categorical variables
-
-model1 \<- aov(Cover.value ~ Block.f \* Treatment \* Transect.f)
-summary(model1) plot(resid(model1)) \# lm output for comparing each
-level summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
-
-Comment: Treatment effect seems to be significant. Sum of squares for
-residuals is very large, indicating a lot of variation is unexplained
-and the significance of treatment might not be true. No obvious pattern
-from residual plot.
-
-1.  Model 2: Transect is now a random effect, Block and Treatment are
-    fixed effects
-
-model2.1 \<- lmer(Cover.value ~ Treatment+Block.f+(1|Transect.f))
-summary(model2.1) model2.2 \<- lmer(Cover.value ~
-1+Block+(1|Transect.f)) anova(model2.2, model2.1)
-
-> S550: Not sure if the response variable is categorical then usual
-> linear mixed effect model will be worthy or not? Why you use Block.f
-> for the model2.1 and Block for the model2.2? Also need to clarify
-> about random intercept and random slope model.
-
-Comment: Treatment effect is still significant at the same significance
-level. From the lm output, A small proportion of randomness is explained
-by Transect effects but variance of residuals is still quite large. The
-residuals seem to be centered at 0 from the summary of lm output: scaled
-residuals.
-
-Question: I did not use aov() because I am not sure how to read summary
-of aov output properly when there are three explanatory variables. It
-contains strange behaviours. Not sure if aov output would be more useful
-here.
-
-1.  Model 3: Mixed effects models with nested structure
-
-model3.1 \<- lmer(Cover.value ~
-Treatment+Block.f+(1|Treatment:Transect.f)) summary(model3.1) model3.2
-\<- lmer(Cover.value ~ 1+Block.f+(1|Treatment:Transect.f))
-anova(model3.1, model3.2)
-
-Comment: Treatment is still a significant factor in this mixed effect
-nested model. Same as before, residual variance is still large.
-
-1.  Quick comment on Ordinal regression model to incorporate that
-    Cover.value is a discrete dependent variable
-
-Cover.value.f \<- as.factor(Cover.value) model4.1 \<- polr(Cover.value.f
-~ Treatment+Block.f+Transect.f, Hess = T) summary(model4.1) model4.2 \<-
-polr(Cover.value.f ~ 1+Block.f+Transect.f, Hess = T) anova(model4.1,
-model4.2)
-
-I tried to include random effects in ordinal regression model but polr()
-does not recognize the same syntax as above. In addition I get confused
-when comparing two ordinal regression models as anova() shows a p-value
-of 0. I think we should discuss whether it is enough to assume that
-Cover.value is contineous before exploring more about ordinal
-regression?
-
-detach(pc)
+> S550: We might have to do a Spearman correlation (it's an option
+> inside the cor() function), because one of the variables is ordinal.
