@@ -140,34 +140,19 @@ acf(pc_sub)
 
 ### Analysis
 ```{r}
+pc$Block <- as.factor(pc$Block)
 pc.subset <- subset(pc, Species == "POPR")
+pc.subset <- pc.subset[ ,c(3,4,9)]
 
-block<-matrix(c(1,2,3,4,1,2,3,4), 8, 1)
-tr<-matrix(c(rep("Biosolids",4), rep("Control",4)), 8, 1)
+by_blockTrt <- group_by(pc.subset, Block, Treatment)
+dat.avg<-summarise(by_blockTrt, y.avg=sum(Cover.value)/50)
+add2control <- c("2","Control",0)
+dat.avg[8, ] <- add2control
+dat.avg
 
-cv.bio<-matrix(NA,4,1)
-for (i in 1:4) {
-  comb<-filter(pc.subset, Block == i & Treatment == "Biosolids")
-    avg<-sum(comb$Cover.value)/50
-    cv.bio[i,]<-avg
-}
-
-cv.con<-matrix(NA,4,1)
-for (i in 1:4) {
-  comb<-filter(pc.subset, Block == i & Treatment == "Control")
-  avg<-sum(comb$Cover.value)/50
-  cv.con[i,]<-avg
-}
-
-cv<-rbind(cv.bio, cv.con)
-avg.data<-data.frame(cbind(block,tr,cv))
-colnames(avg.data)[1]<-"Block"
-colnames(avg.data)[2]<-"Treatment"
-colnames(avg.data)[3]<-"Cover.value"
-
-cv.model <- lm(as.numeric(as.character(Cover.value)) ~ Treatment + Block, data = avg.data)
-anova(cv.model)
-summary(cv.model)
+model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
+summary(model_avg)
+# MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of adding-zero approach
 ```
 
 ### Correlation between Plant Cover and MWD
@@ -175,8 +160,8 @@ summary(cv.model)
 a<-group_by(soil,Block,Treatment) %>%
   summarise(mean(MWD))
 b<-a$`mean(MWD)`
-mean.MWD<-c(b[1], b[3], b[5], b[7], b[2], b[4], b[6], b[8])
-mean.cv<-as.numeric(as.character(avg.data$Cover.value))
+mean.MWD<-c(b[1], b[2], b[3], b[5], b[6], b[7], b[8], b[4])
+mean.cv<-as.numeric(as.character(dat.avg$y.avg))
 cor(mean.MWD, mean.cv)
 ```
 
@@ -346,7 +331,7 @@ Bio_B2 <- cbind(a,b,c)
 Bio_B3_original1 <- 
   filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
   select(Block)
-zero_B <- list(rep(1, 21))
+zero_B <- list(rep(3, 21))
 a<-rbind(zero_B, Bio_B3_original1)
 
 Bio_B3_original2 <- 
@@ -426,7 +411,7 @@ colnames(Con_B2)[3]<-"Cover.value"
 Con_B3_original1 <- 
   filter(subset.cv, Block == 3 & Treatment == "Control") %>%
   select(Block)
-zero_B <- list(rep(1, 49))
+zero_B <- list(rep(3, 49))
 a<-rbind(zero_B, Con_B3_original1)
 
 Con_B3_original2 <- 
@@ -470,9 +455,8 @@ Con_B4 <- cbind(a,b,c)
 #----------------------
 dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
 
-model1 <- lmer(as.numeric(Cover.value) ~ Treatment + (1|Block), data = dat)
-model2 <- lmer(as.numeric(Cover.value) ~ (1|Block), data = dat)
-anova(model1, model2)
+model_zero <- aov(as.numeric(Cover.value) ~ Treatment+Error(Treatment/Block), data = dat)
+summary(model_zero)
 
 detach(pc)
 ```

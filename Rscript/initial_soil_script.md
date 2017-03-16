@@ -400,76 +400,61 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
 ### Analysis
 
+    pc$Block <- as.factor(pc$Block)
     pc.subset <- subset(pc, Species == "POPR")
+    pc.subset <- pc.subset[ ,c(3,4,9)]
 
-    block<-matrix(c(1,2,3,4,1,2,3,4), 8, 1)
-    tr<-matrix(c(rep("Biosolids",4), rep("Control",4)), 8, 1)
+    by_blockTrt <- group_by(pc.subset, Block, Treatment)
+    dat.avg<-summarise(by_blockTrt, y.avg=sum(Cover.value)/50)
+    add2control <- c("2","Control",0)
+    dat.avg[8, ] <- add2control
+    dat.avg
 
-    cv.bio<-matrix(NA,4,1)
-    for (i in 1:4) {
-      comb<-filter(pc.subset, Block == i & Treatment == "Biosolids")
-        avg<-sum(comb$Cover.value)/50
-        cv.bio[i,]<-avg
-    }
-
-    cv.con<-matrix(NA,4,1)
-    for (i in 1:4) {
-      comb<-filter(pc.subset, Block == i & Treatment == "Control")
-      avg<-sum(comb$Cover.value)/50
-      cv.con[i,]<-avg
-    }
-
-    cv<-rbind(cv.bio, cv.con)
-    avg.data<-data.frame(cbind(block,tr,cv))
-    colnames(avg.data)[1]<-"Block"
-    colnames(avg.data)[2]<-"Treatment"
-    colnames(avg.data)[3]<-"Cover.value"
-
-    cv.model <- lm(as.numeric(as.character(Cover.value)) ~ Treatment + Block, data = avg.data)
-    anova(cv.model)
-
-    ## Analysis of Variance Table
+    ## Source: local data frame [8 x 3]
+    ## Groups: Block [?]
     ## 
-    ## Response: as.numeric(as.character(Cover.value))
-    ##           Df  Sum Sq Mean Sq F value  Pr(>F)  
-    ## Treatment  1 1324.84 1324.84 14.0908 0.03303 *
-    ## Block      3  291.96   97.32  1.0351 0.48902  
-    ## Residuals  3  282.06   94.02                  
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##    Block Treatment y.avg
+    ## * <fctr>    <fctr> <chr>
+    ## 1      1 Biosolids 23.45
+    ## 2      1   Control  0.15
+    ## 3      2 Biosolids  9.75
+    ## 4      3 Biosolids 26.85
+    ## 5      3   Control  0.05
+    ## 6      4 Biosolids  43.4
+    ## 7      4   Control   0.3
+    ## 8      2   Control     0
 
-    summary(cv.model)
+    model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
+    summary(model_avg)
 
     ## 
     ## Call:
-    ## lm(formula = as.numeric(as.character(Cover.value)) ~ Treatment + 
-    ##     Block, data = avg.data)
+    ## lm(formula = as.numeric(y.avg) ~ Treatment, data = dat.avg)
     ## 
     ## Residuals:
-    ##       1       2       3       4       5       6       7       8 
-    ## -1.2188 -7.9937  0.5313  8.6813  1.2188  7.9937 -0.5313 -8.6813 
+    ##      Min       1Q   Median       3Q      Max 
+    ## -16.1125  -0.6969  -0.0250   0.3781  17.5375 
     ## 
     ## Coefficients:
-    ##                  Estimate Std. Error t value Pr(>|t|)  
-    ## (Intercept)        24.669      7.666   3.218   0.0487 *
-    ## TreatmentControl  -25.737      6.856  -3.754   0.0330 *
-    ## Block2             -6.925      9.696  -0.714   0.5267  
-    ## Block3              1.650      9.696   0.170   0.8757  
-    ## Block4             10.050      9.696   1.036   0.3762  
+    ##                  Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept)        25.862      4.891   5.288  0.00185 **
+    ## TreatmentControl  -25.738      6.916  -3.721  0.00984 **
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 9.696 on 3 degrees of freedom
-    ## Multiple R-squared:  0.8515, Adjusted R-squared:  0.6534 
-    ## F-statistic: 4.299 on 4 and 3 DF,  p-value: 0.1304
+    ## Residual standard error: 9.781 on 6 degrees of freedom
+    ## Multiple R-squared:  0.6977, Adjusted R-squared:  0.6473 
+    ## F-statistic: 13.85 on 1 and 6 DF,  p-value: 0.009838
+
+    # MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of adding-zero approach
 
 ### Correlation between Plant Cover and MWD
 
     a<-group_by(soil,Block,Treatment) %>%
       summarise(mean(MWD))
     b<-a$`mean(MWD)`
-    mean.MWD<-c(b[1], b[3], b[5], b[7], b[2], b[4], b[6], b[8])
-    mean.cv<-as.numeric(as.character(avg.data$Cover.value))
+    mean.MWD<-c(b[1], b[2], b[3], b[5], b[6], b[7], b[8], b[4])
+    mean.cv<-as.numeric(as.character(dat.avg$y.avg))
     cor(mean.MWD, mean.cv)
 
     ## [1] 0.6447241
@@ -657,7 +642,7 @@ detach(pc)
     Bio_B3_original1 <- 
       filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
       select(Block)
-    zero_B <- list(rep(1, 21))
+    zero_B <- list(rep(3, 21))
     a<-rbind(zero_B, Bio_B3_original1)
 
     Bio_B3_original2 <- 
@@ -737,7 +722,7 @@ detach(pc)
     Con_B3_original1 <- 
       filter(subset.cv, Block == 3 & Treatment == "Control") %>%
       select(Block)
-    zero_B <- list(rep(1, 49))
+    zero_B <- list(rep(3, 49))
     a<-rbind(zero_B, Con_B3_original1)
 
     Con_B3_original2 <- 
@@ -781,21 +766,21 @@ detach(pc)
     #----------------------
     dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
 
-    model1 <- lmer(as.numeric(Cover.value) ~ Treatment + (1|Block), data = dat)
-    model2 <- lmer(as.numeric(Cover.value) ~ (1|Block), data = dat)
-    anova(model1, model2)
+    model_zero <- aov(as.numeric(Cover.value) ~ Treatment+Error(Treatment/Block), data = dat)
+    summary(model_zero)
 
-    ## refitting model(s) with ML (instead of REML)
-
-    ## Data: dat
-    ## Models:
-    ## model2: as.numeric(Cover.value) ~ (1 | Block)
-    ## model1: as.numeric(Cover.value) ~ Treatment + (1 | Block)
-    ##        Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
-    ## model2  3 3737.4 3749.4 -1865.7   3731.4                             
-    ## model1  4 3658.5 3674.5 -1825.3   3650.5 80.886      1  < 2.2e-16 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Error: Treatment
+    ##           Df Sum Sq Mean Sq
+    ## Treatment  1  66242   66242
+    ## 
+    ## Error: Treatment:Block
+    ##           Df Sum Sq Mean Sq F value Pr(>F)
+    ## Residuals  6  28701    4784               
+    ## 
+    ## Error: Within
+    ##            Df Sum Sq Mean Sq F value Pr(>F)
+    ## Residuals 392 208116   530.9
 
     detach(pc)
 
