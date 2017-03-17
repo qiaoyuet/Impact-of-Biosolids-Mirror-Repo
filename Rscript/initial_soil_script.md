@@ -71,9 +71,13 @@ LONG TERM IMPACTS OF BIOSOLIDS ON MWD
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
-    ggplot(aes(x=soil$Treatment,y=soil$MWD), data=soil) + geom_boxplot() + labs(y="MWD", x="Treatment", main="Boxplot of MWD for the Two Treatment Groups")
+    ggplot(aes(MWD, fill = Treatment, alpha = 0.4), data=soil) + geom_density() + facet_wrap(~Date)
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-2.png)
+
+    ggplot(aes(y=MWD, x=Treatment, fill = Treatment, alpha = 0.4), data=soil) + geom_boxplot() + geom_point() + facet_wrap(~Date)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-3.png)
 
     tapply(soil$MWD, soil$Treatment, mean)
 
@@ -88,27 +92,27 @@ LONG TERM IMPACTS OF BIOSOLIDS ON MWD
     qqnorm(soil$MWD)
     qqline(soil$MWD)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-3.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-4.png)
 
     acf(soil)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-4.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-5.png)
 
     Transect.f<-as.factor(soil$Transect)
     plot.design(MWD~Treatment+Block+Date+Transect.f, data = soil, xlab="Treatment", ylab="MWD")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-5.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-6.png)
 
     Date.f = factor(soil$Date,levels(soil$Date)[c(1, 3, 2, 4)])
     ggplot(soil, aes(x = Date.f, y = MWD, group = Treatment, colour = Treatment)) +
       stat_summary(fun.y="mean", geom = "line") +
       labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-6.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-7.png)
 
     interaction.plot(soil$Block,soil$Treatment,soil$MWD)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-7.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-3-8.png)
 
 ### Analysis
 

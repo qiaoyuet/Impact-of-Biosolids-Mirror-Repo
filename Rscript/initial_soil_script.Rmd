@@ -37,7 +37,8 @@ group_by(soil,Date,Treatment) %>%
 ```{r,echo=TRUE}
 hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
 
-ggplot(aes(x=soil$Treatment,y=soil$MWD), data=soil) + geom_boxplot() + labs(y="MWD", x="Treatment", main="Boxplot of MWD for the Two Treatment Groups")
+ggplot(aes(MWD, fill = Treatment, alpha = 0.4), data=soil) + geom_density() + facet_wrap(~Date)
+ggplot(aes(y=MWD, x=Treatment, fill = Treatment, alpha = 0.4), data=soil) + geom_boxplot() + geom_point() + facet_wrap(~Date)
 tapply(soil$MWD, soil$Treatment, mean)
 tapply(soil$MWD, soil$Treatment, sd)
 
