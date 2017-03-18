@@ -314,7 +314,6 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 ### Data Exploration
 
     pc <- read.csv("plant_cover.csv", header = T)
-    attach(pc)
     str(pc)
 
     ## 'data.frame':    2669 obs. of  9 variables:
@@ -328,75 +327,97 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ##  $ Cover.class: int  1 1 1 2 4 5 3 3 1 2 ...
     ##  $ Cover.value: num  2.5 2.5 2.5 15 62.5 85 37.5 37.5 2.5 15 ...
 
+    pc$Block <- as.factor(pc$Block)
+
+    # for whole dataset
     group_by(pc,Block,Treatment) %>%
       summarise(mean(Cover.value), sd(Cover.value))
 
     ## Source: local data frame [8 x 4]
     ## Groups: Block [?]
     ## 
-    ##   Block Treatment `mean(Cover.value)` `sd(Cover.value)`
-    ##   <int>    <fctr>               <dbl>             <dbl>
-    ## 1     1 Biosolids            32.70764          35.28365
-    ## 2     1   Control            17.30952          18.18493
-    ## 3     2 Biosolids            28.90365          32.73254
-    ## 4     2   Control            15.17857          17.42308
-    ## 5     3 Biosolids            40.47071          38.97941
-    ## 6     3   Control            21.96884          23.51373
-    ## 7     4 Biosolids            33.51124          36.84526
-    ## 8     4   Control            16.77356          20.23028
+    ##    Block Treatment `mean(Cover.value)` `sd(Cover.value)`
+    ##   <fctr>    <fctr>               <dbl>             <dbl>
+    ## 1      1 Biosolids            32.70764          35.28365
+    ## 2      1   Control            17.30952          18.18493
+    ## 3      2 Biosolids            28.90365          32.73254
+    ## 4      2   Control            15.17857          17.42308
+    ## 5      3 Biosolids            40.47071          38.97941
+    ## 6      3   Control            21.96884          23.51373
+    ## 7      4 Biosolids            33.51124          36.84526
+    ## 8      4   Control            16.77356          20.23028
 
-    ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
+    table_sum <- tapply(pc$Cover.value,pc$Treatment, table)
+    table_sum
+
+    ## $Biosolids
+    ## 
+    ##  2.5   15 37.5 62.5   85 97.5 
+    ##  405  265  111   78   91  158 
+    ## 
+    ## $Control
+    ## 
+    ##  2.5   15 37.5 62.5   85 97.5 
+    ##  676  510  243   94   35    3
+
+    barplot(table_sum$Biosolids, space = 0, xlab = "Cover Values", ylab = "Frenquency", main = "Counts of POPR with Biosolids Application", col = "mistyrose")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-    ggplot(aes(x = Block, y = Cover.class, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Class", title = "Change in Cover Class over Different Blocks")
+    barplot(table_sum$Control, space = 0, xlab = "Cover Values", ylab = "Frenquency", main = "Counts of POPR with Control", col = "mistyrose")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
 
-    # From the plots above we can see Cover Class and Cover Value are almost the same in terms of changes with Treatment and within Blocks. We use Cover Value because it is closer to a continuous variable.
+    ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-3.png)
+
+    # for subset POPR
+    pc.subset <- subset(pc, Species == "POPR")
+    table_sum_POPR <- tapply(pc.subset$Cover.value,pc.subset$Treatment, table)
+    table_sum_POPR
+
+    ## $Biosolids
+    ## 
+    ##  2.5   15 37.5 62.5   85 97.5 
+    ##   19   28   20   15   16   17 
+    ## 
+    ## $Control
+    ## 
+    ## 2.5  15 
+    ##   4   1
+
+    ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc.subset)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value of POPR over Different Blocks")
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-4.png)
 
 ### Diagnostics: checking assumptions of linear models
 
-    plot(Treatment, Cover.value)
+    plot(pc.subset$Treatment, pc.subset$Cover.value)
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     # similar variability of cover value within two levels of treatment although strange behaviour of Control group
 
-    qqnorm(Cover.value)
+    qqnorm(pc.subset$Cover.value)
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-2.png)
 
     # strange behaviour due to the fact that cover value is discrete
-    hist(Cover.value)
+    hist(pc.subset$Cover.value)
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-3.png)
 
     # not quite normal, heavy right tail
 
-    # I tried the following transformations to reduce right skewness but it does not seem to work well. I continued with non-transfromed response value in the analysis below, but this should be a concern?
-    hist(1/Cover.value)
+    pc_sub <- pc.subset[ ,c(3,4,5,9)]
+    acf(pc_sub)
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
 
-    Cover.value.log <- log(Cover.value)
-    hist(Cover.value.log)
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-5.png)
-
-    Cover.value.sqrt <- sqrt(Cover.value)
-    hist(Cover.value.sqrt)
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-6.png)
-
-    pc_sub <- pc[ ,c(3,4,5,9)]
-    acf(pc_sub)
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-7.png)
-
     # no multicolinearity within explnatory variables
 
-    # Residuals are checked in the next section after imposing each linear model.
+    # Residuals are checked in the next section after imposing linear model.
 
 > S550: Here both cover value and cover class are categorical so what
 > does linear regression and diagnostics of the linear regression
@@ -537,8 +558,8 @@ anova(lmer3.1,lmer3.2)
 1.  Model 1: all explanatory variables are fixed categorical variables
 
 model1 \<- aov(Cover.value ~ Block.f \* Treatment \* Transect.f)
-summary(model1) plot(resid(model1)) \# lm output for comparing each
-level summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
+summary(model1) plot(resid(model1)) summary(lm(Cover.value ~
+Treatment*Block.f*Transect.f))
 
 Comment: Treatment effect seems to be significant. Sum of squares for
 residuals is very large, indicating a lot of variation is unexplained
@@ -595,207 +616,192 @@ regression?
 
 detach(pc)
 
-    pc$Block <- as.factor(pc$Block)
-    pc.subset <- subset(pc, Species == "POPR")
-    subset.cv <- pc.subset[ ,c(3,4,9)]
-
-    Bio_B1_original1 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
-      select(Block)
-    zero_B <- list(rep(1, 19))
-    a<-rbind(zero_B, Bio_B1_original1)
-
-    Bio_B1_original2 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
-      select(Treatment)
-    zero_T <- list(rep("Biosolids", 19))
-    b<-rbind(zero_T, Bio_B1_original2)
-
-    Bio_B1_original3 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 19))
-    c<-rbind(zero_C, Bio_B1_original3)
-
-    Bio_B1 <- cbind(a,b,c)
-
-    #----
-
-    Bio_B2_original1 <- 
-      filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
-      select(Block)
-    zero_B <- list(rep(2, 36))
-    a<-rbind(zero_B, Bio_B2_original1)
-
-    Bio_B2_original2 <- 
-      filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
-      select(Treatment)
-    zero_T <- list(rep("Biosolids", 36))
-    b<-rbind(zero_T, Bio_B2_original2)
-
-    Bio_B2_original3 <- 
-      filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 36))
-    c<-rbind(zero_C, Bio_B2_original3)
-
-    Bio_B2 <- cbind(a,b,c)
-
-    #------
-
-    Bio_B3_original1 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
-      select(Block)
-    zero_B <- list(rep(3, 21))
-    a<-rbind(zero_B, Bio_B3_original1)
-
-    Bio_B3_original2 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
-      select(Treatment)
-    zero_T <- list(rep("Biosolids", 21))
-    b<-rbind(zero_T, Bio_B3_original2)
-
-    Bio_B3_original3 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 21))
-    c<-rbind(zero_C, Bio_B3_original3)
-
-    Bio_B3 <- cbind(a,b,c)
-
-    #-----------------------
-    Bio_B4_original1 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
-      select(Block)
-    zero_B <- list(rep(4, 9))
-    a<-rbind(zero_B, Bio_B4_original1)
-
-    Bio_B4_original2 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
-      select(Treatment)
-    zero_T <- list(rep("Biosolids", 9))
-    b<-rbind(zero_T, Bio_B4_original2)
-
-    Bio_B4_original3 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 9))
-    c<-rbind(zero_C, Bio_B4_original3)
-
-    Bio_B4 <- cbind(a,b,c)
-
-    #-----------------------
-
-    Con_B1_original1 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Control") %>%
-      select(Block)
-    zero_B <- list(rep(1, 47))
-    a<-rbind(zero_B, Con_B1_original1)
-
-    Con_B1_original2 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Control") %>%
-      select(Treatment)
-    zero_T <- list(rep("Control", 47))
-    b<-rbind(zero_T, Con_B1_original2)
-
-    Con_B1_original3 <- 
-      filter(subset.cv, Block == 1 & Treatment == "Control") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 47))
-    c<-rbind(zero_C, Con_B1_original3)
-
-    Con_B1 <- cbind(a,b,c)
-
-    #----
-
-    a <- matrix(2, 50, 1)
-
-    b <- matrix("Control", 50,1)
-
-    c <- matrix(0, 50,1)
-
-    Con_B2<-data.frame(cbind(a,b,c))
-    colnames(Con_B2)[1]<-"Block"
-    colnames(Con_B2)[2]<-"Treatment"
-    colnames(Con_B2)[3]<-"Cover.value"
-
-
-
-    #-------
-
-    Con_B3_original1 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Control") %>%
-      select(Block)
-    zero_B <- list(rep(3, 49))
-    a<-rbind(zero_B, Con_B3_original1)
-
-    Con_B3_original2 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Control") %>%
-      select(Treatment)
-    zero_T <- list(rep("Control", 49))
-    b<-rbind(zero_T, Con_B3_original2)
-
-    Con_B3_original3 <- 
-      filter(subset.cv, Block == 3 & Treatment == "Control") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 49))
-    c<-rbind(zero_C, Con_B3_original3)
-
-    Con_B3 <- cbind(a,b,c)
-
-
-    #-------------------
-
-
-    Con_B4_original1 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Control") %>%
-      select(Block)
-    zero_B <- list(rep(4, 49))
-    a<-rbind(zero_B, Con_B4_original1)
-
-    Con_B4_original2 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Control") %>%
-      select(Treatment)
-    zero_T <- list(rep("Control", 49))
-    b<-rbind(zero_T, Con_B4_original2)
-
-    Con_B4_original3 <- 
-      filter(subset.cv, Block == 4 & Treatment == "Control") %>%
-      select(Cover.value)
-    zero_C <- list(rep(0, 49))
-    c<-rbind(zero_C, Con_B4_original3)
-
-    Con_B4 <- cbind(a,b,c)
-
-    #----------------------
-    dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
-
-    model_zero <- aov(as.numeric(Cover.value) ~ Treatment+Error(Treatment/Block), data = dat)
-    summary(model_zero)
-
-    ## 
-    ## Error: Treatment
-    ##           Df Sum Sq Mean Sq
-    ## Treatment  1  66242   66242
-    ## 
-    ## Error: Treatment:Block
-    ##           Df Sum Sq Mean Sq F value Pr(>F)
-    ## Residuals  6  28701    4784               
-    ## 
-    ## Error: Within
-    ##            Df Sum Sq Mean Sq F value Pr(>F)
-    ## Residuals 392 208116   530.9
-
-    detach(pc)
-
-    pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
-    soil.june <- soil %>%
-      filter(Date == "June")
-    soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
-    cor(pc.corr[2], soil.corr[2])
-
-    ##            value
-    ## value -0.9843717
+    # pc.subset <- subset(pc, Species == "POPR")
+    # subset.cv <- pc.subset[ ,c(3,4,9)]
+    # 
+    # Bio_B1_original1 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+    #   select(Block)
+    # zero_B <- list(rep(1, 19))
+    # a<-rbind(zero_B, Bio_B1_original1)
+    # 
+    # Bio_B1_original2 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Biosolids", 19))
+    # b<-rbind(zero_T, Bio_B1_original2)
+    # 
+    # Bio_B1_original3 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Biosolids") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 19))
+    # c<-rbind(zero_C, Bio_B1_original3)
+    # 
+    # Bio_B1 <- cbind(a,b,c)
+    # 
+    # #----
+    # 
+    # Bio_B2_original1 <- 
+    #   filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+    #   select(Block)
+    # zero_B <- list(rep(2, 36))
+    # a<-rbind(zero_B, Bio_B2_original1)
+    # 
+    # Bio_B2_original2 <- 
+    #   filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Biosolids", 36))
+    # b<-rbind(zero_T, Bio_B2_original2)
+    # 
+    # Bio_B2_original3 <- 
+    #   filter(subset.cv, Block == 2 & Treatment == "Biosolids") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 36))
+    # c<-rbind(zero_C, Bio_B2_original3)
+    # 
+    # Bio_B2 <- cbind(a,b,c)
+    # 
+    # #------
+    # 
+    # Bio_B3_original1 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+    #   select(Block)
+    # zero_B <- list(rep(3, 21))
+    # a<-rbind(zero_B, Bio_B3_original1)
+    # 
+    # Bio_B3_original2 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Biosolids", 21))
+    # b<-rbind(zero_T, Bio_B3_original2)
+    # 
+    # Bio_B3_original3 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Biosolids") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 21))
+    # c<-rbind(zero_C, Bio_B3_original3)
+    # 
+    # Bio_B3 <- cbind(a,b,c)
+    # 
+    # #-----------------------
+    # Bio_B4_original1 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+    #   select(Block)
+    # zero_B <- list(rep(4, 9))
+    # a<-rbind(zero_B, Bio_B4_original1)
+    # 
+    # Bio_B4_original2 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Biosolids", 9))
+    # b<-rbind(zero_T, Bio_B4_original2)
+    # 
+    # Bio_B4_original3 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Biosolids") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 9))
+    # c<-rbind(zero_C, Bio_B4_original3)
+    # 
+    # Bio_B4 <- cbind(a,b,c)
+    # 
+    # #-----------------------
+    # 
+    # Con_B1_original1 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+    #   select(Block)
+    # zero_B <- list(rep(1, 47))
+    # a<-rbind(zero_B, Con_B1_original1)
+    # 
+    # Con_B1_original2 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Control", 47))
+    # b<-rbind(zero_T, Con_B1_original2)
+    # 
+    # Con_B1_original3 <- 
+    #   filter(subset.cv, Block == 1 & Treatment == "Control") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 47))
+    # c<-rbind(zero_C, Con_B1_original3)
+    # 
+    # Con_B1 <- cbind(a,b,c)
+    # 
+    # #----
+    # 
+    # a <- matrix(2, 50, 1)
+    # 
+    # b <- matrix("Control", 50,1)
+    # 
+    # c <- matrix(0, 50,1)
+    # 
+    # Con_B2<-data.frame(cbind(a,b,c))
+    # colnames(Con_B2)[1]<-"Block"
+    # colnames(Con_B2)[2]<-"Treatment"
+    # colnames(Con_B2)[3]<-"Cover.value"
+    # 
+    # 
+    # 
+    # #-------
+    # 
+    # Con_B3_original1 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+    #   select(Block)
+    # zero_B <- list(rep(3, 49))
+    # a<-rbind(zero_B, Con_B3_original1)
+    # 
+    # Con_B3_original2 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Control", 49))
+    # b<-rbind(zero_T, Con_B3_original2)
+    # 
+    # Con_B3_original3 <- 
+    #   filter(subset.cv, Block == 3 & Treatment == "Control") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 49))
+    # c<-rbind(zero_C, Con_B3_original3)
+    # 
+    # Con_B3 <- cbind(a,b,c)
+    # 
+    # 
+    # #-------------------
+    # 
+    # 
+    # Con_B4_original1 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+    #   select(Block)
+    # zero_B <- list(rep(4, 49))
+    # a<-rbind(zero_B, Con_B4_original1)
+    # 
+    # Con_B4_original2 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+    #   select(Treatment)
+    # zero_T <- list(rep("Control", 49))
+    # b<-rbind(zero_T, Con_B4_original2)
+    # 
+    # Con_B4_original3 <- 
+    #   filter(subset.cv, Block == 4 & Treatment == "Control") %>%
+    #   select(Cover.value)
+    # zero_C <- list(rep(0, 49))
+    # c<-rbind(zero_C, Con_B4_original3)
+    # 
+    # Con_B4 <- cbind(a,b,c)
+    # 
+    # #----------------------
+    # dat <- rbind(Bio_B1, Bio_B2, Bio_B3, Bio_B4, Con_B1, Con_B2,Con_B3,Con_B4)
+    # 
+    # model_zero <- aov(as.numeric(Cover.value) ~ Treatment+Error(Treatment/Block), data = dat)
+    # summary(model_zero)
+    # 
+    # detach(pc)
+    # ```
+    # 
+    # ```{r}
+    # pc.corr <- melt(tapply(pc$Cover.value, pc$Block, mean))
+    # soil.june <- soil %>%
+    #   filter(Date == "June")
+    # soil.corr <- melt(tapply(soil.june$MWD, soil.june$Block, mean))
+    # cor(pc.corr[2], soil.corr[2])
 
 MWD and Plant Cover Value seem to have a strong negative correlation
 which is strange because we expect to see at least a positive
