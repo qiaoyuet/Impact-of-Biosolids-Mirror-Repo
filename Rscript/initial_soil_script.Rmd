@@ -240,7 +240,6 @@ anova(lmer3.1,lmer3.2)
 model1 <- aov(Cover.value ~ Block.f * Treatment * Transect.f)
 summary(model1)
 plot(resid(model1))
-# lm output for comparing each level
 summary(lm(Cover.value ~ Treatment*Block.f*Transect.f))
 
 Comment: Treatment effect seems to be significant. Sum of squares for residuals is very large, indicating a lot of variation is unexplained and the significance of treatment might not be true. No obvious pattern from residual plot.
