@@ -360,11 +360,11 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ##  2.5   15 37.5 62.5   85 97.5 
     ##  676  510  243   94   35    3
 
-    barplot(table_sum$Biosolids, space = 0, xlab = "Cover Values", ylab = "Frenquency", main = "Counts of POPR with Biosolids Application", col = "mistyrose")
+    barplot(table_sum$Control, space = 0, ylim = c(0,700),xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values with Control", col = "mistyrose")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-    barplot(table_sum$Control, space = 0, xlab = "Cover Values", ylab = "Frenquency", main = "Counts of POPR with Control", col = "mistyrose")
+    barplot(table_sum$Biosolids, space = 0, ,ylim = c(0,700), xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values with Biosolids", col = "mistyrose")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
 
@@ -374,6 +374,7 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     # for subset POPR
     pc.subset <- subset(pc, Species == "POPR")
+
     table_sum_POPR <- tapply(pc.subset$Cover.value,pc.subset$Treatment, table)
     table_sum_POPR
 
@@ -387,7 +388,14 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ## 2.5  15 
     ##   4   1
 
-    ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc.subset)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value of POPR over Different Blocks")
+    pc.subset <- pc.subset[ ,c(3,4,9)]
+    by_blockTrt <- group_by(pc.subset, Block, Treatment)
+    dat.avg<-summarise(by_blockTrt, y.avg=sum(Cover.value)/50)
+    add2control <- c("2","Control",0)
+    dat.avg[8, ] <- add2control
+
+    dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
+    ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value of POPR over Different Blocks")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-4.png)
 
@@ -410,11 +418,8 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     # not quite normal, heavy right tail
 
-    pc_sub <- pc.subset[ ,c(3,4,5,9)]
-    acf(pc_sub)
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
-
+    #pc_sub <- pc.subset[ ,c(3,4,5,9)]
+    #acf(pc_sub)
     # no multicolinearity within explnatory variables
 
     # Residuals are checked in the next section after imposing linear model.
