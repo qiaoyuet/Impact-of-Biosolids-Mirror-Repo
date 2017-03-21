@@ -85,6 +85,7 @@ anova(soil.rcb1,soil.date)
 
 Add interaction effect
 ```{r,echo=T}
+soil$Treatment <- relevel(soil$Treatment, ref = "con")
 soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
 summary(soil.mult)
 plot(soil.mult)
@@ -140,6 +141,9 @@ qqnorm(pc.subset$Cover.value)
 hist(pc.subset$Cover.value)
 # not quite normal, heavy right tail
 
+ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + facet_wrap(~Block)
+# almost same variance
+
 #pc_sub <- pc.subset[ ,c(3,4,5,9)]
 #acf(pc_sub)
 # no multicolinearity within explnatory variables
@@ -163,6 +167,7 @@ add2control <- c("2","Control",0)
 dat.avg[8, ] <- add2control
 dat.avg
 
+dat.avg$Treatment <- relevel(dat.avg$Treatment, ref = "Control")
 model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
 summary(model_avg)
 # MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of adding-zero approach

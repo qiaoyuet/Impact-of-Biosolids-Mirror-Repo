@@ -250,6 +250,7 @@ Add Date to the model
 
 Add interaction effect
 
+    soil$Treatment <- relevel(soil$Treatment, ref = "con")
     soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
     summary(soil.mult)
 
@@ -271,24 +272,24 @@ Add interaction effect
     ## 
     ## Fixed effects:
     ##                       Estimate Std. Error t value
-    ## (Intercept)            1.05167    0.07357  14.294
-    ## Treatmentcon          -0.17167    0.08161  -2.104
-    ## DateAug                0.72833    0.08161   8.925
-    ## DateJune               0.69000    0.08161   8.455
-    ## DateOct                0.61583    0.08161   7.546
-    ## Treatmentcon:DateAug  -0.05750    0.11541  -0.498
-    ## Treatmentcon:DateJune  0.14833    0.11541   1.285
-    ## Treatmentcon:DateOct  -0.24000    0.11541  -2.079
+    ## (Intercept)            0.88000    0.07357  11.961
+    ## Treatmentbio           0.17167    0.08161   2.104
+    ## DateAug                0.67083    0.08161   8.220
+    ## DateJune               0.83833    0.08161  10.272
+    ## DateOct                0.37583    0.08161   4.605
+    ## Treatmentbio:DateAug   0.05750    0.11541   0.498
+    ## Treatmentbio:DateJune -0.14833    0.11541  -1.285
+    ## Treatmentbio:DateOct   0.24000    0.11541   2.079
     ## 
     ## Correlation of Fixed Effects:
     ##             (Intr) Trtmnt DateAg DateJn DatOct Trt:DA Trt:DJ
-    ## Treatmentcn -0.555                                          
+    ## Treatmentbi -0.555                                          
     ## DateAug     -0.555  0.500                                   
     ## DateJune    -0.555  0.500  0.500                            
     ## DateOct     -0.555  0.500  0.500  0.500                     
-    ## Trtmntcn:DA  0.392 -0.707 -0.707 -0.354 -0.354              
-    ## Trtmntcn:DJ  0.392 -0.707 -0.354 -0.707 -0.354  0.500       
-    ## Trtmntcn:DO  0.392 -0.707 -0.354 -0.354 -0.707  0.500  0.500
+    ## Trtmntb:DtA  0.392 -0.707 -0.707 -0.354 -0.354              
+    ## Trtmntb:DtJ  0.392 -0.707 -0.354 -0.707 -0.354  0.500       
+    ## Trtmntb:DtO  0.392 -0.707 -0.354 -0.354 -0.707  0.500  0.500
 
     plot(soil.mult)
 
@@ -418,6 +419,12 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     # not quite normal, heavy right tail
 
+    ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + facet_wrap(~Block)
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
+
+    # almost same variance
+
     #pc_sub <- pc.subset[ ,c(3,4,5,9)]
     #acf(pc_sub)
     # no multicolinearity within explnatory variables
@@ -454,6 +461,7 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ## 7      4   Control   0.3
     ## 8      2   Control     0
 
+    dat.avg$Treatment <- relevel(dat.avg$Treatment, ref = "Control")
     model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
     summary(model_avg)
 
@@ -466,9 +474,9 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ## -16.1125  -0.6969  -0.0250   0.3781  17.5375 
     ## 
     ## Coefficients:
-    ##                  Estimate Std. Error t value Pr(>|t|)   
-    ## (Intercept)        25.862      4.891   5.288  0.00185 **
-    ## TreatmentControl  -25.738      6.916  -3.721  0.00984 **
+    ##                    Estimate Std. Error t value Pr(>|t|)   
+    ## (Intercept)           0.125      4.891   0.026  0.98044   
+    ## TreatmentBiosolids   25.738      6.916   3.721  0.00984 **
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -487,7 +495,7 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     mean.cv<-as.numeric(as.character(dat.avg$y.avg))
     cor(mean.MWD, mean.cv)
 
-    ## [1] 0.6447241
+    ## [1] -0.6155239
 
 ### Appendix (model history)
 
