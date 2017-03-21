@@ -137,9 +137,9 @@ qqline(soil$MWD)
 
 Figure 4.2 Normal quantile-quantile plot of MWD
 
-We used ANOVA to compare models with different explanatory variables:
-* A p-value of 0.006 leads to the rejection of the null hypothesis at 1% significance level. There is very strong evidence that a model including treatment effect is very different from that without treatment effect.
-* A p-value less than 0.001 leads to the rejection of the null hypothesis even at 0.1% significance level. There is very strong evidence that a model including date effect is very different from that without date effect.
+We used ANOVA to compare models with different explanatory variables:  
+* A p-value of 0.006 leads to the rejection of the null hypothesis at 1% significance level. There is very strong evidence that a model including treatment effect is very different from that without treatment effect.  
+* A p-value less than 0.001 leads to the rejection of the null hypothesis even at 0.1% significance level. There is very strong evidence that a model including date effect is very different from that without date effect.  
 * A p-value of 0.008 leads to the rejection of the null hypothesis at 1% significance level. There is very strong evidence that a model including interaction effect of treatment and date is very different from that without interaction effect.
 
 Two treatment types and four sampling dates give us eight combinations. The intercept estimate 0.88 is the mean MWD of control group in April (baseline group). From April to June, the mean MWD of control group increase 0.838. This is the most dramatic increase in MWD among the four sampling dates as Figure 4.3 shows. Moreover, all the estimates for the main effects of dates are positive. It means that MWD always increases as sampling dates change compared to April. As for the main effect of biosolids on soil, mean MWD in biosolids group increases 0.172 compared to the control group in April.

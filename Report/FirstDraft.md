@@ -267,17 +267,19 @@ Figure 4.1 Histogram of MWD
 
 Figure 4.2 Normal quantile-quantile plot of MWD
 
-We used ANOVA to compare models with different explanatory variables: \*
-A p-value of 0.006 leads to the rejection of the null hypothesis at 1%
-significance level. There is very strong evidence that a model including
-treatment effect is very different from that without treatment
-effect. \* A p-value less than 0.001 leads to the rejection of the null
+We used ANOVA to compare models with different explanatory variables:  
+\* A p-value of 0.006 leads to the rejection of the null hypothesis at
+1% significance level. There is very strong evidence that a model
+including treatment effect is very different from that without treatment
+effect.  
+\* A p-value less than 0.001 leads to the rejection of the null
 hypothesis even at 0.1% significance level. There is very strong
 evidence that a model including date effect is very different from that
-without date effect. \* A p-value of 0.008 leads to the rejection of the
-null hypothesis at 1% significance level. There is very strong evidence
-that a model including interaction effect of treatment and date is very
-different from that without interaction effect.
+without date effect.  
+\* A p-value of 0.008 leads to the rejection of the null hypothesis at
+1% significance level. There is very strong evidence that a model
+including interaction effect of treatment and date is very different
+from that without interaction effect.
 
 Two treatment types and four sampling dates give us eight combinations.
 The intercept estimate 0.88 is the mean MWD of control group in April
