@@ -167,7 +167,7 @@ hist(pc.subset$Cover.value, main="Histogram of cover value for POPR")
 
 Figure 4.4 Histogram of cover value for species POPR 
 
-After fitting a regression model with averaged cover value per block as response variable and treatment factor as explanatory variable, we obtain a p-value of 0.00984 for biosolids treatment. With a p-value smaller than 0.01, we find strong evidence to reject the null hypothesis which biosolids and control produce indifferent cover values. The estimated coefficient for biosolids treatment is 25.738. It means that when changing from control to biosolids, we would expect an estimated increase of 25.738 in cover value of POPR.
+After fitting a regression model with averaged cover value per block as response variable and treatment factor as explanatory variable, we obtain a p-value of 0.00984 for biosolids treatment. With a p-value smaller than 0.01, we find strong evidence to reject the null hypothesis which biosolids and control produce indifferent cover values. The estimated coefficient for biosolids treatment is 25.738 with 95% confidence interval (8.815, 42.661). It means that when changing from control to biosolids, we would expect an estimated increase between 8.815 and 42.661 with 95% confidence in cover value of POPR.
 
 ##### Correlation between MWD and cover value
 Since there are unequal number of observations of MWD and cover value, we test correlation using the eight means from the eight combinations of treatment and block for both MWD and cover value. The estimated correlation is 0.645 which indicates moderately strong positive relationship between MWD and cover value. It means that MWD and cover value vary in the same direction and such dependency relationship is moderately strong.
