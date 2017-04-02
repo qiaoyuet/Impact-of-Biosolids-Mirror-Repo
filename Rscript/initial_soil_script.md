@@ -361,17 +361,13 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     ##  2.5   15 37.5 62.5   85 97.5 
     ##  676  510  243   94   35    3
 
-    barplot(table_sum$Control, space = 0, ylim = c(0,700),xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values with Control", col = "mistyrose")
+    ggplot(pc,aes(x=Cover.value,group=Treatment,fill=Treatment))+geom_histogram(position="dodge",binwidth=9)+theme_bw()+labs(title="Histogram of Cover Value for all Species")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-    barplot(table_sum$Biosolids, space = 0, ,ylim = c(0,700), xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values with Biosolids", col = "mistyrose")
-
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
-
     ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-3.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
 
     # for subset POPR
     pc.subset <- subset(pc, Species == "POPR")
@@ -397,6 +393,10 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
     ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value of POPR over Different Blocks")
+
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-3.png)
+
+    ggplot(aes(y=y.avg, x=Treatment, fill = Treatment, alpha = 0.4), data=dat.avg) + geom_boxplot() + geom_point()+ labs(y = "POPR Cover Value", title = "Boxplot of POPR Cover Value")
 
 ![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-4.png)
 

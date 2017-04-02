@@ -2,42 +2,41 @@
 
 This report examines the effectiveness of biosolids, a new kind of
 fertilizer that potentially enhances soil activity by providing food
-source through microbial activities. In particular, we compare the
-change in Mean Weight Diameter (MWD), a parameter measuring soil
-stability, and the change in cover value, a criterion for abundance of
-plant species between observations under biosolids and control. The
-impact of biosolids on soil stability is analyzed by a mixed effect
-model. The effect on abundance of plant species is addressed by linear
-regression. We also calculate the correlation between MWD and cover
-value to examine if they move in the same direction. We find strong
-evidence to support the hypothesis that biosolids significantly
-increases soil productivity and coverage of certain plant species. We
-also find that MWD and cover value are positively correlated.
+sources through microbial activities. In particular, we compare the
+magnitude of Mean Weight Diameter (MWD), a parameter measuring soil
+stability, with and without biosolids application. We also compare the
+magnitude of cover value, a criterion for spread of plant species,
+between observations under biosolids and control. The impact of
+biosolids on soil stability is analyzed by a mixed effect model. The
+effect on spread of plant species is addressed by linear regression. The
+correlation between MWD and cover value is also examined. We find strong
+evidence that biosolids significantly increases soil productivity and
+coverage of certain plant species. We also find that MWD and cover value
+are positively correlated.
 
 #### 1. Introduction
 
-Soil health and productivity is an important issue affecting our daily
-lives and social well-being. Our client, Miss Emma Avery, is completing
-her Master of Soil Science thesis which investigates the long term
-impact of biosolids application on grassland plant communities and soil
-health. Biosolids, the main interest of the experient, is a fertilizer
-of interest that provides food source for microbial activities thus
-enhancing soil productivity. The experiment was established in 2002 at
-OK Ranch, Jasmond, BC when four grasslands were randomly chosen and
-applied either biosolids or control (no biosolids). Later, the data were
-collected in 2016 and we received it in January 2017 for analysis. The
-primary interest is to investigate whether Mean Weight Diameter (MWD), a
+Soil productivity is an important issue affecting agricultural
+activities and biodiversity. Our client, Emma Avery, is completing her
+thesis for Master of Soil Science degree which investigates the long
+term impact of biosolids on soil health and grassland plant communities.
+Biosolids, the main interest of the experiment, is a fertilizer that
+provides food sources for microbial activities to enhance soil
+productivity. The experiment was conducted in 2002 at OK Ranch, Jasmond,
+BC. Four grasslands were randomly chosen and either applied biosolids or
+left as control (no biosolids). Later, the data were collected in 2016
+and passed on to us in January 2017 for analysis. This report’s primary
+interest is to investigate whether Mean Weight Diameter (MWD), a
 parameter that quantifies soil productivity, is affected by 1) treatment
-type and 2) sampling date. The secondary interest is to explore the long
-term effect of biosolids on specific plant species composition. The
-third interest is to examine the correlation between MWD and the cover
-value of plants. The results of this report assess the significance of
-biosolids application on soil productivity and plant composition. It
-potentially impacts the existing fertilizers and introduces a more
-effective kind of new product. Starting with a description of dataset
-and methods,the following report addresses the above questions of
-interests with detailed analysis and ends with conclusions and further
-discussions.
+type and 2) sampling date. The secondary interest is to explore the
+effect of biosolids on specific plant species composition. The third
+interest is to examine the correlation between MWD and the cover value
+of plants. The report assesses the significance of biosolids application
+on soil productivity and plant composition. It indicates that Biosolids
+performs well in terms of enhancing soil stability and increasing spread
+of plant species. Starting with a description of dataset and methods,
+the report addresses the above questions of interests with detailed
+analysis and ends with conclusions and further discussions.
 
 #### 2. Data Description
 
@@ -106,8 +105,8 @@ analysis, we specifically investigate one species, POPR.
 
 Table 2.2 describes the frequencies of cover values appearing under
 biosolids application and control for all species. The bar graphs
-(Figure 2.2 and 2.3) provide a better visualization for the results in
-Table 2.2. We observe that when changing from control group to biosolids
+(Figure 2.2) provide a better visualization for the results in Table
+2.2. We observe that when changing from control group to biosolids
 group, there is a dramatic decrease in number of observations with low
 cover values (\<=37.5), and an increase in number of observations with
 high cover values (\>37.5). For the specific species POPR, Table 2.3
@@ -149,13 +148,8 @@ by treatment groups. The cover values are 2.5, 15, 37.5, 62.5, 85 and
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
-Figure 2.2 Bar graph of frequencies in each class of cover value for
-control group.
-
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-7-1.png)
-
-Figure 2.3 Bar graph of frequencies in each class of cover value for
-biosolids group.
+Figure 2.2 Overlapped histogram in each class of cover value for all
+species. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5.
 
     ## $Biosolids
     ## 
@@ -172,7 +166,7 @@ presented by treatment groups for species POPR. The cover values are
 2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the
 count in that group.
 
-Figure 2.4 and 2.5 provide visualizations of change and variation in
+Figure 2.3 and 2.4 provide visualizations of change and variation in
 cover values over different blocks under both biosolids and control for
 POPR. Each point represents the mean cover value under a specific
 treatment-block combination. The observed cover value under control
@@ -182,15 +176,15 @@ for biosolids group is different in four blocks. But we do not consider
 any interaction effects involving block, because they are not of
 interest.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
-Figure 2.4 Comparison of species POPR cover values between control and
+Figure 2.3 Comparison of species POPR cover values between control and
 biosolids group. Cover values in biosolids group are a lot higher than
 those in control group for all the blocks.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
-Figure 2.5 Boxplots of cover value of species POPR in biosolids and
+Figure 2.4 Boxplots of cover value of species POPR in biosolids and
 control group plotted by the four blocks.
 
 #### 3. Methods
@@ -205,6 +199,8 @@ because the four sampling dates are predetermined by the researchers.
 Block is treated as a random effect, because we use random effect to
 handle the issue of dependencies that arise from the experimental
 design.
+
+There are two complications in the design:
 
 “Repeated measurements” is the case where observations are taken from
 the same subject several times. In our case, MWD is measured in roughly
@@ -268,11 +264,11 @@ sample quantiles from MWD dataset against the theoretical quantiles from
 the standard normal distribution. The fact that most of the points align
 well with the straight line suggests normality.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 Figure 4.1 Histogram of MWD.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-12-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
 Figure 4.2 Normal quantile-quantile plot of MWD.
 
@@ -314,7 +310,7 @@ biosolids group, while the mean MWD decreases for control group. This
 corroborates the significance of the interaction effect between
 treatment and date.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-12-1.png)
 
 Figure 4.3 Change in mean of MWD over the four sampling dates.
 
@@ -338,32 +334,9 @@ We check the following assumptions for linear model:
     experimental unit (half of a block), the observations satisfy the
     independence assumption.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-14-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
 Figure 4.4 Histogram of cover value for species POPR.
-
-    dat.avg$Treatment <- relevel(dat.avg$Treatment, ref = "Control")
-    model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
-    summary(model_avg)
-
-    ## 
-    ## Call:
-    ## lm(formula = as.numeric(y.avg) ~ Treatment, data = dat.avg)
-    ## 
-    ## Residuals:
-    ##      Min       1Q   Median       3Q      Max 
-    ## -16.1125  -0.6969  -0.0250   0.3781  17.5375 
-    ## 
-    ## Coefficients:
-    ##                    Estimate Std. Error t value Pr(>|t|)   
-    ## (Intercept)           0.125      4.891   0.026  0.98044   
-    ## TreatmentBiosolids   25.738      6.916   3.721  0.00984 **
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 9.781 on 6 degrees of freedom
-    ## Multiple R-squared:  0.6977, Adjusted R-squared:  0.6473 
-    ## F-statistic: 13.85 on 1 and 6 DF,  p-value: 0.009838
 
 After fitting a regression model with averaged cover value per block as
 response variable and treatment factor as explanatory variable, we
@@ -386,7 +359,7 @@ which is intuitive.
 #### 5. Conclusions & Furthur Discussion
 
 There is strong evidence that biosolids application and sampling dates
-have significant impact on improving soil productivity. They affect MWD
+have significant impact on improving soil stability. They affect MWD
 interactively instead of individually. There is also strong evidence
 that biosolids application increases the spread of species POPR. There
 is a moderate positive correlation between MWD and cover value. In

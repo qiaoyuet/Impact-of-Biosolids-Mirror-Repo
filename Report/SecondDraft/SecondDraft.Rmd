@@ -12,11 +12,11 @@ library(dplyr)
 ```
 #### Summary
 
-This report examines the effectiveness of biosolids, a new kind of fertilizer that potentially enhances soil activity by providing food source through microbial activities. In particular, we compare the change in Mean Weight Diameter (MWD), a parameter measuring soil stability, and the change in cover value, a criterion for abundance of plant species between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on abundance of plant species is addressed by linear regression. We also calculate the correlation between MWD and cover value to examine if they move in the same direction. We find strong evidence to support the hypothesis that biosolids significantly increases soil productivity and coverage of certain plant species. We also find that MWD and cover value are positively correlated.
+This report examines the effectiveness of biosolids, a new kind of fertilizer that potentially enhances soil activity by providing food sources through microbial activities. In particular, we compare the magnitude of Mean Weight Diameter (MWD), a parameter measuring soil stability, with and without biosolids application. We also compare the magnitude of cover value, a criterion for spread of plant species, between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on spread of plant species is addressed by linear regression. The correlation between MWD and cover value is also examined. We find strong evidence that biosolids significantly increases soil productivity and coverage of certain plant species. We also find that MWD and cover value are positively correlated.
 
 #### 1. Introduction
 
-Soil health and productivity is an important issue affecting our daily lives and social well-being. Our client, Miss Emma Avery, is completing her Master of Soil Science thesis which investigates the long term impact of biosolids application on grassland plant communities and soil health. Biosolids, the main interest of the experient, is a fertilizer of interest that provides food source for microbial activities thus enhancing soil productivity. The experiment was established in 2002 at OK Ranch, Jasmond, BC when four grasslands were randomly chosen and applied either biosolids or control (no biosolids). Later, the data were collected in 2016 and we received it in January 2017 for analysis. The primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the long term effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The results of this report assess the significance of biosolids application on soil productivity and plant composition. It potentially impacts the existing fertilizers and introduces a more effective kind of new product. Starting with a description of dataset and methods,the following report addresses the above questions of interests with detailed analysis and ends with conclusions and further discussions.
+Soil productivity is an important issue affecting agricultural activities and biodiversity. Our client, Emma Avery, is completing her thesis for Master of Soil Science degree which investigates the long term impact of biosolids on soil health and grassland plant communities. Biosolids, the main interest of the experiment, is a fertilizer that provides food sources for microbial activities to enhance soil productivity. The experiment was conducted in 2002 at OK Ranch, Jasmond, BC. Four grasslands were randomly chosen and either applied biosolids or left as control (no biosolids). Later, the data were collected in 2016 and passed on to us in January 2017 for analysis. This report’s primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The report assesses the significance of biosolids application on soil productivity and plant composition. It indicates that Biosolids performs well in terms of enhancing soil stability and increasing spread of plant species. Starting with a description of dataset and methods, the report addresses the above questions of interests with detailed analysis and ends with conclusions and further discussions. 
 
 #### 2. Data Description
 
@@ -40,7 +40,7 @@ Table 2.1 Mean and standard deviation of MWD by sampling dates and treatment typ
 
 For the investigation of plants, 5 plant transects were laid out in half of a block. The researchers randomly selected 10 plots from each transect. Visual assessment was done for each plot. The species present and the corresponding abundance were recorded. The measurement of plant composition was quantified by cover class, a number from 1 to 6 that assesses the canopy cover of plant species. Cover class was then converted to cover value which is a number in percentage and is in one-to-one correspondence to cover class. For example, cover class 1 represents a cover from 0% to 5%. The midpoint 2.5% is the cover value corresponding to cover class 1. Therefore there are 6 cover values in the dataset: 2.5%, 15%, 37.5%, 62.5%, 85%, 97.5%. The dataset includes the plant species name, block index, treatment type, plot number, cover class and cover value. The total number of plant assessments is 400 (4 blocks × 2 treatments × 5 transects × 10 samples per transect). If researchers did not observe a species for certain plots, the entry of that species is omitted instead of being recorded as 0. In the following analysis, we specifically investigate one species, POPR.
 
-Table 2.2 describes the frequencies of cover values appearing under biosolids application and control for all species. The bar graphs (Figure 2.2 and 2.3) provide a better visualization for the results in Table 2.2. We observe that when changing from control group to biosolids group, there is a dramatic decrease in number of observations with low cover values (<=37.5), and an increase in number of observations with high cover values (>37.5). For the specific species POPR, Table 2.3 summarizes the frequencies of observations under 6 levels of cover values for biosolids and control respectively. The counts under two treatments are quite different, indicating that biosolids is potentially effective.
+Table 2.2 describes the frequencies of cover values appearing under biosolids application and control for all species. The bar graphs (Figure 2.2) provide a better visualization for the results in Table 2.2. We observe that when changing from control group to biosolids group, there is a dramatic decrease in number of observations with low cover values (<=37.5), and an increase in number of observations with high cover values (>37.5). For the specific species POPR, Table 2.3 summarizes the frequencies of observations under 6 levels of cover values for biosolids and control respectively. The counts under two treatments are quite different, indicating that biosolids is potentially effective.
 
 ```{r,echo=FALSE}
 pc <- read.csv("plant_cover.csv", header = T)
@@ -59,16 +59,11 @@ table_sum
 Table 2.2 Number of observation in each class of cover value presented by treatment groups. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the count in that group.
 
 ```{r,echo=FALSE}
-barplot(table_sum$Control, space = 0, ylim = c(0,700),xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values in Control Group", col = "mistyrose")
+ggplot(pc,aes(x=Cover.value,group=Treatment,fill=Treatment))+geom_histogram(position="dodge",binwidth=9)+theme_bw()+labs(title="Histogram of Cover Value for all Species")
 ```
 
-Figure 2.2 Bar graph of frequencies in each class of cover value for control group.
+Figure 2.2 Overlapped histogram in each class of cover value for all species. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5.
 
-```{r,echo=FALSE}
-barplot(table_sum$Biosolids, space = 0, ,ylim = c(0,700), xlab = "Cover Values", ylab = "Frenquency", main = "Counts of Cover Values in Biosolids Group", col = "mistyrose")
-```
-
-Figure 2.3 Bar graph of frequencies in each class of cover value for biosolids group.
 
 ```{r,echo=FALSE}
 pc.subset <- subset(pc, Species == "POPR")
@@ -78,7 +73,7 @@ table_sum_POPR
 
 Table 2.3 Frequencies of observations in each class of cover value presented by treatment groups for species POPR. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the count in that group.
 
-Figure 2.4 and 2.5 provide visualizations of change and variation in cover values over different blocks under both biosolids and control for POPR. Each point represents the mean cover value under a specific treatment-block combination. The observed cover value under control group are close to 0 in all four blocks while the cover values under biosolids are quite high. We also observe that the change in cover value for biosolids group is different in four blocks. But we do not consider any interaction effects involving block, because they are not of interest.
+Figure 2.3 and 2.4 provide visualizations of change and variation in cover values over different blocks under both biosolids and control for POPR. Each point represents the mean cover value under a specific treatment-block combination. The observed cover value under control group are close to 0 in all four blocks while the cover values under biosolids are quite high. We also observe that the change in cover value for biosolids group is different in four blocks. But we do not consider any interaction effects involving block, because they are not of interest.
 
 ```{r,echo=FALSE}
 pc.subset <- pc.subset[ ,c(3,4,9)]
@@ -91,13 +86,13 @@ dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
 ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "Plant Cover Value", title = "Comparison of POPR Cover Values between Biosolids and Control")
 ```
 
-Figure 2.4 Comparison of species POPR cover values between control and biosolids group. Cover values in biosolids group are a lot higher than those in control group for all the blocks.  
+Figure 2.3 Comparison of species POPR cover values between control and biosolids group. Cover values in biosolids group are a lot higher than those in control group for all the blocks.  
 
 ```{r,echo=FALSE}
-ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + facet_wrap(~Block)
+ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + labs(title="Boxplot of Cover Value of Species POPR")
 ```
 
-Figure 2.5 Boxplots of cover value of species POPR in biosolids and control group plotted by the four blocks.
+Figure 2.4 Boxplots of cover value of species POPR in biosolids and control group plotted by the four blocks.
 
 
 #### 3. Methods
@@ -105,6 +100,8 @@ Figure 2.5 Boxplots of cover value of species POPR in biosolids and control grou
 ##### Long term impact of biosolids on soil (MWD)
 
 We use a mixed-effect linear model which has both fixed and random effects. In our context, MWD is the response variable. Treatment is a fixed effect, because the experimenters directly manipulate the application of treatment to the soil. Date is also a fixed effect, because the four sampling dates are predetermined by the researchers. Block is treated as a random effect, because we use random effect to handle the issue of dependencies that arise from the experimental design. 
+
+There are two complications in the design:
 
 “Repeated measurements” is the case where observations are taken from the same subject several times. In our case, MWD is measured in roughly the same place four times during the growing season. These four observations are dependent, because they are affected by common characteristics belonging to the same sampling location. 
 
@@ -173,11 +170,6 @@ hist(pc.subset$Cover.value, main="Histogram of cover value for POPR", xlab = "Co
 
 Figure 4.4 Histogram of cover value for species POPR.
 
-```{r}
-dat.avg$Treatment <- relevel(dat.avg$Treatment, ref = "Control")
-model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
-summary(model_avg)
-```
 
 After fitting a regression model with averaged cover value per block as response variable and treatment factor as explanatory variable, we obtain a p-value of 0.00984 for biosolids treatment. With a p-value smaller than 0.01, we find strong evidence to reject the null hypothesis that biosolids and control produce indifferent cover values. When changing from control to biosolids, we expect an estimated increase of 25.738% [8.815%, 42.661%] in cover value of POPR with 95% confidence.
 
@@ -187,7 +179,7 @@ Since there are an unequal number of observations of MWD and cover value, we tes
 
 #### 5. Conclusions & Furthur Discussion
 
-There is strong evidence that biosolids application and sampling dates have significant impact on improving soil productivity. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of species POPR. There is a moderate positive correlation between MWD and cover value. In conclusion, biosolids is an effective fertilizer that enhances soil stability and plant canopy cover. Better soil quality is associated with more growth of the plants.     
+There is strong evidence that biosolids application and sampling dates have significant impact on improving soil stability. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of species POPR. There is a moderate positive correlation between MWD and cover value. In conclusion, biosolids is an effective fertilizer that enhances soil stability and plant canopy cover. Better soil quality is associated with more growth of the plants.     
 
 For further studies, ordinal regression is more appropriate for plant investigation because cover value is a discrete variable. In terms of the experimental design, we recommend that researchers increase the number of blocks instead of transects in order to increase the number of independent observations. Moreover, soil/plant samples could be taken randomly in blocks instead of in fixed transects since proper randomization can balance potentially important explanatory variables at the design stage.
 
