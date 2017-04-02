@@ -309,6 +309,78 @@ Add interaction effect
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
+Bootstrapping for confidence interval of coefficient
+
+    b_fit <- list()
+    for(i in 1:100) {
+      b_sample <- dplyr::sample_n(soil, dim(soil)[1], replace = TRUE)
+      b_coefs <- fixef(lmer(MWD~Treatment*Date+(1|Block), data = b_sample))
+      b_fit[[i]] <- b_coefs
+    }
+
+    b_all_coef <- plyr::ldply(b_fit)
+    sort(b_all_coef$Treatmentbio)
+
+    ##   [1] 0.04864765 0.04998044 0.05836816 0.06377287 0.07784527 0.08881657
+    ##   [7] 0.09759396 0.10198682 0.10303089 0.10432260 0.10999787 0.11742626
+    ##  [13] 0.11889863 0.12132556 0.12628043 0.12957423 0.13040258 0.13605774
+    ##  [19] 0.13803588 0.13855616 0.13870784 0.13920327 0.14012333 0.14013204
+    ##  [25] 0.14120695 0.14122068 0.14314810 0.14474233 0.14578059 0.14723581
+    ##  [31] 0.14732308 0.14772543 0.14942142 0.14963448 0.14966174 0.15006150
+    ##  [37] 0.15376368 0.15488068 0.15870533 0.16384865 0.16458474 0.16519879
+    ##  [43] 0.16749153 0.16806678 0.16950094 0.17179017 0.17200725 0.17593090
+    ##  [49] 0.17969692 0.18082540 0.18129139 0.18227090 0.18278794 0.18284067
+    ##  [55] 0.18325121 0.18400822 0.18447067 0.18480496 0.18484398 0.18624423
+    ##  [61] 0.18699570 0.18812215 0.18861561 0.19054095 0.19328531 0.19330461
+    ##  [67] 0.19419265 0.19436341 0.19767335 0.19818388 0.19849512 0.20051978
+    ##  [73] 0.20064392 0.20321046 0.20427791 0.20591946 0.20659568 0.20970308
+    ##  [79] 0.21292972 0.21380366 0.21471872 0.21731257 0.22237871 0.22431679
+    ##  [85] 0.22515387 0.22576644 0.22578683 0.22704065 0.22787002 0.23149242
+    ##  [91] 0.24307680 0.24389896 0.24801834 0.26817857 0.27145348 0.27281669
+    ##  [97] 0.28670430 0.28933627 0.31411253 0.33672166
+
+    # estimate with 95% Confidence interval is: 0.172 (0.054, 0.261)
+    sort(b_all_coef$DateJune)
+
+    ##   [1] 0.6901337 0.6958549 0.7225197 0.7240199 0.7426482 0.7491946 0.7515718
+    ##   [8] 0.7563777 0.7602129 0.7634196 0.7635136 0.7641988 0.7667382 0.7681096
+    ##  [15] 0.7702035 0.7740599 0.7745966 0.7773725 0.7807309 0.7816993 0.7834513
+    ##  [22] 0.7894895 0.7899926 0.7907458 0.7910720 0.7959795 0.8021825 0.8030885
+    ##  [29] 0.8040365 0.8045093 0.8061918 0.8066621 0.8080587 0.8081273 0.8089979
+    ##  [36] 0.8102427 0.8112187 0.8120641 0.8158557 0.8175544 0.8199307 0.8244636
+    ##  [43] 0.8249749 0.8302239 0.8336838 0.8337434 0.8378750 0.8392260 0.8423998
+    ##  [50] 0.8451969 0.8453585 0.8489897 0.8492131 0.8498650 0.8507786 0.8518694
+    ##  [57] 0.8518908 0.8520334 0.8525763 0.8533877 0.8537937 0.8550613 0.8621229
+    ##  [64] 0.8625344 0.8627577 0.8635069 0.8645295 0.8647908 0.8658026 0.8685754
+    ##  [71] 0.8694132 0.8713375 0.8725784 0.8775442 0.8779636 0.8782313 0.8812507
+    ##  [78] 0.8857104 0.8927010 0.8948078 0.9008266 0.9022239 0.9038494 0.9084033
+    ##  [85] 0.9084696 0.9094359 0.9148068 0.9198574 0.9232357 0.9347908 0.9354304
+    ##  [92] 0.9357760 0.9373829 0.9563178 0.9566606 0.9664512 0.9692863 0.9705341
+    ##  [99] 0.9712080 0.9760986
+
+    # estimate with 95% Confidence interval is: 0.838 (0.719, 0.956)
+    sort(b_all_coef$`Treatmentbio:DateOct`)
+
+    ##   [1] 0.05936977 0.06198304 0.06627320 0.08678895 0.08933866 0.10039752
+    ##   [7] 0.10162928 0.10883325 0.12612098 0.13044324 0.13662845 0.13851041
+    ##  [13] 0.13936473 0.13966430 0.14446539 0.14656988 0.15135414 0.15653913
+    ##  [19] 0.15722957 0.16264402 0.17697551 0.17780280 0.17927481 0.17948446
+    ##  [25] 0.18427662 0.18461589 0.18764440 0.18810673 0.18963729 0.19287070
+    ##  [31] 0.19727464 0.19740244 0.20672106 0.20914736 0.21285515 0.21531642
+    ##  [37] 0.21643246 0.22031060 0.22045824 0.22179958 0.22247514 0.22288929
+    ##  [43] 0.22351049 0.22393989 0.22761219 0.22924836 0.22929770 0.22974530
+    ##  [49] 0.23018624 0.23257803 0.23843366 0.24092287 0.24170958 0.24294266
+    ##  [55] 0.24604148 0.24878094 0.24974982 0.25678085 0.25760908 0.26081707
+    ##  [61] 0.26531601 0.26566346 0.26619450 0.26669726 0.27171351 0.27406083
+    ##  [67] 0.27674327 0.28193647 0.28640330 0.28940507 0.28985531 0.29282458
+    ##  [73] 0.29376604 0.29458479 0.29549744 0.29844110 0.30375038 0.31093551
+    ##  [79] 0.31655357 0.31935069 0.32216160 0.33014999 0.33371782 0.33374131
+    ##  [85] 0.33554934 0.33576209 0.34125373 0.34303063 0.35586948 0.35939497
+    ##  [91] 0.36301749 0.36448461 0.36663832 0.37252544 0.38108738 0.38441201
+    ##  [97] 0.40528693 0.40904052 0.41866826 0.42788948
+
+    # estimate with 95% Confidence interval is: 0.240 (0.085, 0.409)
+
 LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 ---------------------------------------------
 
@@ -363,11 +435,11 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
     ggplot(pc,aes(x=Cover.value,group=Treatment,fill=Treatment))+geom_histogram(position="dodge",binwidth=9)+theme_bw()+labs(title="Histogram of Cover Value for all Species")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     ggplot(aes(x = Block, y = Cover.value, group = Treatment, colour = Treatment), data = pc)+stat_summary(fun.y="mean", geom = "line")+labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value over Different Blocks")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-2.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-2.png)
 
     # for subset POPR
     pc.subset <- subset(pc, Species == "POPR")
@@ -394,34 +466,34 @@ LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
     dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
     ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "Plant Cover Value", title = "Change in Cover Value of POPR over Different Blocks")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-3.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-3.png)
 
     ggplot(aes(y=y.avg, x=Treatment, fill = Treatment, alpha = 0.4), data=dat.avg) + geom_boxplot() + geom_point()+ labs(y = "POPR Cover Value", title = "Boxplot of POPR Cover Value")
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-7-4.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
 
 ### Diagnostics: checking assumptions of linear models
 
     plot(pc.subset$Treatment, pc.subset$Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
     # similar variability of cover value within two levels of treatment although strange behaviour of Control group
 
     qqnorm(pc.subset$Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-2.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-9-2.png)
 
     # strange behaviour due to the fact that cover value is discrete
     hist(pc.subset$Cover.value)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-3.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-9-3.png)
 
     # not quite normal, heavy right tail
 
     ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + facet_wrap(~Block)
 
-![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-8-4.png)
+![](initial_soil_script_files/figure-markdown_strict/unnamed-chunk-9-4.png)
 
     # almost same variance
 

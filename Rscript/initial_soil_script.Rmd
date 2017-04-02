@@ -92,7 +92,23 @@ plot(soil.mult)
 anova(soil.date,soil.mult)
 ```
 
+Bootstrapping for confidence interval of coefficient
+```{r}
+b_fit <- list()
+for(i in 1:100) {
+  b_sample <- dplyr::sample_n(soil, dim(soil)[1], replace = TRUE)
+  b_coefs <- fixef(lmer(MWD~Treatment*Date+(1|Block), data = b_sample))
+  b_fit[[i]] <- b_coefs
+}
 
+b_all_coef <- plyr::ldply(b_fit)
+sort(b_all_coef$Treatmentbio)
+# estimate with 95% Confidence interval is: 0.172 (0.054, 0.261)
+sort(b_all_coef$DateJune)
+# estimate with 95% Confidence interval is: 0.838 (0.719, 0.956)
+sort(b_all_coef$`Treatmentbio:DateOct`)
+# estimate with 95% Confidence interval is: 0.240 (0.085, 0.409)
+```
 
 ## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
