@@ -103,12 +103,16 @@ for(i in 1:100) {
 
 b_all_coef <- plyr::ldply(b_fit)
 sort(b_all_coef$Treatmentbio)
-# estimate with 95% Confidence interval is: 0.172 (0.054, 0.261)
+# estimate with 95% Confidence interval is: 0.172 (0.054, 0.261) <- fix date in April
 sort(b_all_coef$DateJune)
 # estimate with 95% Confidence interval is: 0.838 (0.719, 0.956)
 sort(b_all_coef$`Treatmentbio:DateOct`)
 # estimate with 95% Confidence interval is: 0.240 (0.085, 0.409)
+
+
 ```
+
+
 
 ## LONG TERM IMPACTS OF BIOSOLIDS ON PLANT COVER
 
@@ -205,6 +209,57 @@ cor(mean.MWD, mean.cv)
 ### Appendix (model history)
 
 #### Part 1
+
+Changing baselines to test coefficients
+```{r}
+soil$Treatment <- relevel(soil$Treatment, ref = "con")
+soil$Date <- relevel(soil$Date, ref = "June")
+soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
+summary(soil.mult)
+
+b_fit <- list()
+for(i in 1:100) {
+  b_sample <- dplyr::sample_n(soil, dim(soil)[1], replace = TRUE)
+  b_coefs <- fixef(lmer(MWD~Treatment*Date+(1|Block), data = b_sample))
+  b_fit[[i]] <- b_coefs
+}
+
+b_all_coef <- plyr::ldply(b_fit)
+sort(b_all_coef$Treatmentbio)
+# estimate with 95% Confidence interval is: 0.023 (-0.235, 0.248) <- fix date in June
+
+soil$Date <- relevel(soil$Date, ref = "Aug")
+soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
+summary(soil.mult)
+
+b_fit <- list()
+for(i in 1:100) {
+  b_sample <- dplyr::sample_n(soil, dim(soil)[1], replace = TRUE)
+  b_coefs <- fixef(lmer(MWD~Treatment*Date+(1|Block), data = b_sample))
+  b_fit[[i]] <- b_coefs
+}
+
+b_all_coef <- plyr::ldply(b_fit)
+sort(b_all_coef$Treatmentbio)
+# estimate with 95% Confidence interval is: 0.229 (0.058, 0.422) <- fix date in August
+
+soil$Date <- relevel(soil$Date, ref = "Oct")
+soil.mult<-lmer(MWD~Treatment*Date+(1|Block), soil)
+summary(soil.mult)
+
+b_fit <- list()
+for(i in 1:100) {
+  b_sample <- dplyr::sample_n(soil, dim(soil)[1], replace = TRUE)
+  b_coefs <- fixef(lmer(MWD~Treatment*Date+(1|Block), data = b_sample))
+  b_fit[[i]] <- b_coefs
+}
+
+b_all_coef <- plyr::ldply(b_fit)
+sort(b_all_coef$Treatmentbio)
+# estimate with 95% Confidence interval is: 0.412 (0.265, 0.522) <- fix date in October
+
+```
+
 
 > S550: Good idea to build up the model in this way. But we can take out all the preliminary models when we write the final report.
 
