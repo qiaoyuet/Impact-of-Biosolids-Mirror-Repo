@@ -167,14 +167,13 @@ presented by treatment groups for species POPR. The cover values are
 count in that group.
 
 Figure 2.3 and 2.4 provide visualizations of change and variation in
-cover values over different blocks under both biosolids and control for
-POPR. Each point represents the mean cover value under a specific
-treatment-block combination. The observed cover value under control
-group are close to 0 in all four blocks while the cover values under
-biosolids are quite high. We also observe that the change in cover value
-for biosolids group is different in four blocks. But we do not consider
-any interaction effects involving block, because they are not of
-interest.
+cover values under both biosolids and control for POPR. Each point
+represents the mean cover value under a specific treatment-block
+combination. The observed cover value under control group are close to 0
+in all four blocks while the cover values under biosolids are quite
+high. We also observe that the change in cover value for biosolids group
+is different in four blocks. But we do not consider any interaction
+effects involving block, because they are not of interest.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
@@ -185,7 +184,7 @@ those in control group for all the blocks.
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
 Figure 2.4 Boxplots of cover value of species POPR in biosolids and
-control group plotted by the four blocks.
+control group.
 
 #### 3. Methods
 

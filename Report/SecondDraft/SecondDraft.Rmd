@@ -26,7 +26,7 @@ Figure 2.1 shows the boxplots of MWD under both biosolids and control in 4 sampl
 
 ```{r,echo=FALSE}
 soil<-read.table("MWD.csv", sep = ",", header = T) 
-ggplot(aes(y=MWD, x=Treatment, fill = Treatment, alpha = 0.4), data=soil) + geom_boxplot() + geom_point() + facet_wrap(~Date) + labs(title="Boxplots of MWD over Sampling Dates")
+ggplot(aes(y=MWD, x=Treatment, fill = Treatment, alpha = 0.4), data=soil) + geom_boxplot() + geom_point() + facet_wrap(~Date) + labs(y="MWD (mm)", title="Boxplots of MWD over Sampling Dates")
 ```
 
 Figure 2.1 Boxplots of MWD of biosolids and control group plotted by the four samping dates. The four polts represent the four months. MWD is plotted against treatment type (biosolids as pink, control as green) in each month.
@@ -59,7 +59,7 @@ table_sum
 Table 2.2 Number of observation in each class of cover value presented by treatment groups. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the count in that group.
 
 ```{r,echo=FALSE}
-ggplot(pc,aes(x=Cover.value,group=Treatment,fill=Treatment))+geom_histogram(position="dodge",binwidth=9)+theme_bw()+labs(title="Histogram of Cover Value for all Species")
+ggplot(pc,aes(x=Cover.value,group=Treatment,fill=Treatment))+geom_histogram(position="dodge",binwidth=9)+theme_bw()+labs(x="Cover Value (%)", y="Count", title="Histogram of Cover Value for all Species")
 ```
 
 Figure 2.2 Overlapped histogram in each class of cover value for all species. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5.
@@ -73,7 +73,7 @@ table_sum_POPR
 
 Table 2.3 Frequencies of observations in each class of cover value presented by treatment groups for species POPR. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the count in that group.
 
-Figure 2.3 and 2.4 provide visualizations of change and variation in cover values over different blocks under both biosolids and control for POPR. Each point represents the mean cover value under a specific treatment-block combination. The observed cover value under control group are close to 0 in all four blocks while the cover values under biosolids are quite high. We also observe that the change in cover value for biosolids group is different in four blocks. But we do not consider any interaction effects involving block, because they are not of interest.
+Figure 2.3 and 2.4 provide visualizations of change and variation in cover values under both biosolids and control for POPR. Each point represents the mean cover value under a specific treatment-block combination. The observed cover value under control group are close to 0 in all four blocks while the cover values under biosolids are quite high. We also observe that the change in cover value for biosolids group is different in four blocks. But we do not consider any interaction effects involving block, because they are not of interest.
 
 ```{r,echo=FALSE}
 pc.subset <- pc.subset[ ,c(3,4,9)]
@@ -83,16 +83,16 @@ add2control <- c("2","Control",0)
 dat.avg[8, ] <- add2control
 
 dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
-ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "Plant Cover Value", title = "Comparison of POPR Cover Values between Biosolids and Control")
+ggplot(aes(x = Block, y = y.avg, group = Treatment, colour = Treatment), data = dat.avg) + geom_point() + geom_line() + labs(x = "Block", y = "POPR Cover Value (%)", title = "Comparison of POPR Cover Values between Biosolids and Control")
 ```
 
 Figure 2.3 Comparison of species POPR cover values between control and biosolids group. Cover values in biosolids group are a lot higher than those in control group for all the blocks.  
 
 ```{r,echo=FALSE}
-ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.subset) + geom_boxplot() + geom_point() + labs(title="Boxplot of Cover Value of Species POPR")
+ggplot(aes(y=y.avg, x=Treatment, fill = Treatment, alpha = 0.4), data=dat.avg) + geom_boxplot() + geom_point()+ labs(y = "POPR Cover Value (%)", title = "Boxplot of POPR Cover Value")
 ```
 
-Figure 2.4 Boxplots of cover value of species POPR in biosolids and control group plotted by the four blocks.
+Figure 2.4 Boxplots of cover value of species POPR in biosolids and control group.
 
 
 #### 3. Methods
@@ -125,7 +125,7 @@ In addition, averaging observations from each block-treatment combination solves
 The normality assumption is validated by the histogram of MWD (Figure 4.1) and normal quantile-quantile plot (Figure 4.2). The histogram shows that the sample distribution of MWD is approximately normal, indicating a normal underlying distribution of MWD. The normal qq plot shows the sample quantiles from MWD dataset against the theoretical quantiles from the standard normal distribution. The fact that most of the points align well with the straight line suggests normality.
 
 ```{r,echo=FALSE}
-hist(soil$MWD, xlab="MWD", main = "Histogram of MWD", col = "mistyrose")
+hist(soil$MWD, xlab="MWD (mm)", main = "Histogram of MWD", col = "mistyrose")
 ```
 
 Figure 4.1 Histogram of MWD.
@@ -151,7 +151,7 @@ The treatment-date interaction effect accounts for the extra change in MWD that 
 Date.f = factor(soil$Date,levels(soil$Date)[c(1, 3, 2, 4)])
 ggplot(soil, aes(x = Date.f, y = MWD, group = Treatment, colour = Treatment)) +
   stat_summary(fun.y="mean", geom = "line") +
-  labs(x = "Date", title = "Change in MWD over 4 Sampling Dates")
+  labs(x = "Date", y="MWD (mm)", title = "Change in MWD over 4 Sampling Dates")
 ```
 
 Figure 4.3 Change in mean of MWD over the four sampling dates.
@@ -165,7 +165,7 @@ We check the following assumptions for linear model:
 - Independence is automatically achieved by averaging dependent observations. Since we only have one observation from each experimental unit (half of a block), the observations satisfy the independence assumption.
 
 ```{r,echo=FALSE}
-hist(pc.subset$Cover.value, main="Histogram of cover value for POPR", xlab = "Cover value of POPR", col = "mistyrose")
+hist(pc.subset$Cover.value, main="Histogram of cover value for POPR", xlab = "POPR Cover Value (%)", col = "mistyrose")
 ```
 
 Figure 4.4 Histogram of cover value for species POPR.
