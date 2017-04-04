@@ -1,46 +1,46 @@
 #### Summary
 
 This report examines the effectiveness of biosolids, a new kind of
-fertilizer that potentially enhances soil activity by providing food
-sources through microbial activities. In particular, we compare the
+fertilizer that potentially enhances soil activity by providing a food
+source through microbial activities. In particular, we compare the
 magnitude of Mean Weight Diameter (MWD), a parameter measuring soil
-stability, with and without biosolids application. We also compare the
+stability, with and without biosolids treatment. We also compare the
 magnitude of cover value, a criterion for spread of plant species,
 between observations under biosolids and control. The impact of
 biosolids on soil stability is analyzed by a mixed effect model. The
 effect on spread of plant species is addressed by linear regression. The
 correlation between MWD and cover value is also examined. We find strong
-evidence that biosolids significantly increases soil productivity and
+evidence that biosolids significantly increases soil stability and
 coverage of certain plant species. We also find that MWD and cover value
 are positively correlated.
 
 #### 1. Introduction
 
-Soil productivity is an important issue affecting agricultural
-activities and biodiversity. Our client, Emma Avery, is completing her
-thesis for Master of Soil Science degree which investigates the long
-term impact of biosolids on soil health and grassland plant communities.
-Biosolids, the main interest of the experiment, is a fertilizer that
-provides food sources for microbial activities to enhance soil
-productivity. The experiment was conducted in 2002 at OK Ranch, Jasmond,
-BC. Four grasslands were randomly chosen and either applied biosolids or
-left as control (no biosolids). Later, the data were collected in 2016
-and passed on to us in January 2017 for analysis. This report’s primary
-interest is to investigate whether Mean Weight Diameter (MWD), a
-parameter that quantifies soil productivity, is affected by 1) treatment
-type and 2) sampling date. The secondary interest is to explore the
-effect of biosolids on specific plant species composition. The third
-interest is to examine the correlation between MWD and the cover value
-of plants. The report assesses the significance of biosolids application
-on soil productivity and plant composition. It indicates that Biosolids
-performs well in terms of enhancing soil stability and increasing spread
-of plant species. Starting with a description of dataset and methods,
-the report addresses the above questions of interests with detailed
-analysis and ends with conclusions and further discussions.
+Soil quality is an important issue affecting agricultural activities and
+biodiversity. Our client, Emma Avery, is completing her thesis for
+Master of Soil Science degree which investigates the long term impact of
+biosolids on soil health and grassland plant communities. Biosolids, the
+main interest of the experiment, is able to provided a food source for
+microbial activities thus enhancing soil stability. The experiment was
+conducted in 2002 at OK Ranch, Jesmond, BC. Four grasslands were
+randomly chosen and either applied biosolids or left as control (no
+biosolids). Later, the data were collected in 2016 and passed on to us
+in January 2017 for analysis. This report’s primary interest is to
+investigate whether Mean Weight Diameter (MWD), a parameter that
+quantifies soil productivity, is affected by 1) treatment type and 2)
+sampling date. The secondary interest is to explore the effect of
+biosolids on specific plant species composition. The third interest is
+to examine the correlation between MWD and the cover value of plants.
+The report assesses the significance of biosolids treatment and
+indicates that Biosolids performs well in terms of enhancing soil
+stability and increasing spread of plant species. Starting with a
+description of dataset and methods, the report addresses the above
+questions of interests with detailed analysis and ends with conclusions
+and further discussions.
 
 #### 2. Data Description
 
-The experiment was laid out in 4 pieces of land with similar
+The experiment was laid out in 4 pieces of lands with similar
 characteristics which are treated as blocks. The investigator randomly
 applied biosolids to half of each block and no biosolids to the other
 half. Within each half of a block, 3 equally spaced transects were
@@ -49,8 +49,8 @@ each transect. This process was conducted four times: April, June,
 August and October 2016 respectively. The dataset given to us includes
 the sampling month, block index, treatment type, transect number and the
 MWD averaged from those 7 soil samples for each transect. So the total
-number of soil samples are 96 (4 sampling dates x 4 blocks x 2
-treatments x 3 transects x 1 composite sample per transect).
+number of soil samples is 96 (4 sampling dates x 4 blocks x 2 treatments
+x 3 transects x 1 composite sample per transect).
 
 Figure 2.1 shows the boxplots of MWD under both biosolids and control in
 4 sampling dates. In April, August and October, we observe that data
@@ -101,19 +101,18 @@ class and cover value. The total number of plant assessments is 400 (4
 blocks × 2 treatments × 5 transects × 10 samples per transect). If
 researchers did not observe a species for certain plots, the entry of
 that species is omitted instead of being recorded as 0. In the following
-analysis, we specifically investigate one species, POPR.
+analysis, we specifically investigate one species, Poa pratensis (POPR).
 
 Table 2.2 describes the frequencies of cover values appearing under
-biosolids application and control for all species. The bar graphs
-(Figure 2.2) provide a better visualization for the results in Table
-2.2. We observe that when changing from control group to biosolids
-group, there is a dramatic decrease in number of observations with low
-cover values (\<=37.5), and an increase in number of observations with
-high cover values (\>37.5). For the specific species POPR, Table 2.3
-summarizes the frequencies of observations under 6 levels of cover
-values for biosolids and control respectively. The counts under two
-treatments are quite different, indicating that biosolids is potentially
-effective.
+biosolids and control for all species. The histogram (Figure 2.2)
+provides a better visualization for the results in Table 2.2. We observe
+that when changing from control group to biosolids group, there is a
+dramatic decrease in number of observations with low cover values
+(\<=37.5), and an increase in number of observations with high cover
+values (\>37.5). For the specific species POPR, Table 2.3 summarizes the
+frequencies of observations under 6 levels of cover values for biosolids
+and control respectively. The counts under two treatments are quite
+different, indicating that biosolids is potentially effective.
 
     ## Source: local data frame [8 x 4]
     ## Groups: Block [?]
@@ -169,11 +168,11 @@ count in that group.
 Figure 2.3 and 2.4 provide visualizations of change and variation in
 cover values under both biosolids and control for POPR. Each point
 represents the mean cover value under a specific treatment-block
-combination. The observed cover value under control group are close to 0
-in all four blocks while the cover values under biosolids are quite
+combination. The observed cover values under control group are close to
+0 in all four blocks while the cover values under biosolids are quite
 high. We also observe that the change in cover value for biosolids group
 is different in four blocks. But we do not consider any interaction
-effects involving block, because they are not of interest.
+effects involving block because they are not of interest.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
@@ -208,7 +207,7 @@ observations are dependent, because they are affected by common
 characteristics belonging to the same sampling location.
 
 Another complication is the transects setup. It results in the problem
-of “Pseudoreplication” where replicated observations are not
+of “pseudoreplication” where replicated observations are not
 independent. There are two sources of pseudo replication in our case:
 
 -   The seven soil samples along one transect are pseudo replicates.
@@ -235,17 +234,16 @@ The same problem of pseudoreplication also appears in the plant cover
 dataset. The observations within and between 5 plant transects are
 dependent for the same reasons described in soil transects. The method
 we use is to take the average of cover value over each treatment-block
-combination. Then for treatment group, we have four independent
-observations from the four blocks. For control group, we also have four
-independent observations from the four blocks. For a block-treatment
-combination in which experimenters did not observe any presence of POPR,
-we add a cover value of 0 for that specific combination. Then we can fit
-a usual linear model to this averaged dataset with the averaged cover
-value as the response variable and treatment as the explanatory
-variable.
+combination. Then we have four independent observations from the four
+blocks for both biosolids and control treatment groups. For a
+block-treatment combination in which experimenters did not observe any
+presence of POPR, we add a cover value of 0 for that specific
+combination. Then we fit a usual linear model to this averaged dataset
+with the averaged cover value as the response variable and treatment as
+the explanatory variable.
 
 In addition, averaging observations from each block-treatment
-combination solves the problem that the response variable is discrete.
+combination relieves the problem that the response variable is discrete.
 Since we take an average over 50 discrete observations for each
 combination, the averaged cover value resembles the underlying
 continuous values. Therefore the usual linear model introduced above
@@ -258,7 +256,7 @@ applies.
 The normality assumption is validated by the histogram of MWD (Figure
 4.1) and normal quantile-quantile plot (Figure 4.2). The histogram shows
 that the sample distribution of MWD is approximately normal, indicating
-a normal underlying distribution of MWD. The normal qq plot shows the
+a normal underlying distribution of MWD. The normal QQ plot shows the
 sample quantiles from MWD dataset against the theoretical quantiles from
 the standard normal distribution. The fact that most of the points align
 well with the straight line suggests normality.
@@ -357,23 +355,24 @@ which is intuitive.
 
 #### 5. Conclusions & Furthur Discussion
 
-There is strong evidence that biosolids application and sampling dates
+There is strong evidence that biosolids treatment and sampling dates
 have significant impact on improving soil stability. They affect MWD
 interactively instead of individually. There is also strong evidence
 that biosolids application increases the spread of species POPR. There
 is a moderate positive correlation between MWD and cover value. In
-conclusion, biosolids is an effective fertilizer that enhances soil
+conclusion, biosolids is an effective treatment that enhances soil
 stability and plant canopy cover. Better soil quality is associated with
 more growth of the plants.
 
 For further studies, ordinal regression is more appropriate for plant
 investigation because cover value is a discrete variable. In terms of
 the experimental design, we recommend that researchers increase the
-number of blocks instead of transects in order to increase the number of
-independent observations. Moreover, soil/plant samples could be taken
-randomly in blocks instead of in fixed transects since proper
-randomization can balance potentially important explanatory variables at
-the design stage.
+number of blocks instead of transects. With an increase in the number of
+independent observations, the response variable would be closer to
+normality and the standard errors of the estimated coefficients would be
+smaller. Moreover, soil and plant samples could be taken randomly in
+blocks instead of in fixed transects since proper randomization may
+eliminate potential bias at the design stage.
 
 #### 6. Appendix
 
