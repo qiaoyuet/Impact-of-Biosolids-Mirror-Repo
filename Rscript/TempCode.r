@@ -1,3 +1,32 @@
+rm(list=ls())
+setwd('~/19. UBC 2016 Winter Term 2/STAT 550/Case/SecondDraft from GitHub Apr. 8')
+
+library('ggplot2') # for plotting
+library('lme4') # for mixed-effects models
+library('reshape2') # for ...
+library('dplyr') # for %>%
+library('MASS') # for ...
+library('base') # for ...
+
+# Import the MWD data.
+soil <- read.table('MWD.csv', sep=',', header=T)
+soil$Treatment <- relevel(soil$Treatment, ref='con')
+head(soil)
+str(soil)
+with(soil, table(Treatment,Date))
+
+# Import the cover value data.
+pc <- read.csv('plant_cover.csv', header=T)
+pc$Block <- as.factor(pc$Block)
+head(pc)
+str(pc)
+with(pc, table(Treatment,Block))
+tapply(pc$Cover.value, pc$Treatment, table)
+
+
+##############################
+# Grad Analysis:
+##############################
 
 # Obtain the species of interest.
 all.species <- c('POPR')
@@ -10,7 +39,9 @@ for (ii in 1:length(all.species))
   pc.sub.try <- pc.sub.try[ ,c(3,4,9)]
   
   # Table of counts for each block, by treatment group, for this species.
-  print(table(pc.this.species$Block, pc.this.species$Treatment))
+  entries.try <- table(pc.sub.try$Block, pc.sub.try$Treatment)
+  which.entries.miss.try <- which(entries.try==0, arr.ind=TRUE)
+  
   
   
   
@@ -40,10 +71,6 @@ for (ii in 1:length(species.vec))
   # Table of counts for each class of cover value, by treatment group, for
   # this species.
   print(tapply(pc.this.species$Cover.value, pc.this.species$Treatment, table))
-  
-  # Table of counts for each block, by treatment group, for this species.
-  entries <- table(pc.this.species$Block, pc.this.species$Treatment)
-  which.entries.miss <- which(entries==0, arr.ind=TRUE)
   
   #########################
   # Modelling cover value:
@@ -81,15 +108,29 @@ for (ii in 1:length(species.vec))
          title=paste('Change in ',this.species,'
                      Cover Value over Different Blocks'),sep='')
   
+  # Table of counts for each block, by treatment group, for this species.
+  entries <- table(pc.this.species$Block, pc.this.species$Treatment)
+  which.entries.miss <- which(t(entries)==0)
+  which.entries.miss.ind <- which(entries==0, arr.ind=TRUE)
+  
   # Obtain averages over the transects and plots.
   by_blockTrt.this.species <- group_by(pc.this.species, Block, Treatment)
   dat.avg.this.species <- summarise(by_blockTrt.this.species,
                                     y.avg=sum(Cover.value)/50)
-  add2control <- c('2', 'Control', 0)
-  dat.avg[8, ] <- add2control
-  dat.avg$y.avg <- as.numeric(dat.avg$y.avg)
-  
-  
+  for (jj in 1:length(which.entries.miss))
+  {
+    which.row <- which.entries.miss[jj]
+    which.block <- toString(which.entries.miss.ind[jj,1])
+    which.trt <- ifelse(test=(which.entries.miss.ind[jj,2]==1), yes='Biosolids',
+                        no='Control')
+    new.row <- c(which.block, which.trt, 0)
+    dat.avg.this.species <- rbind(dat.avg.this.species[1:(which.row-1),],
+                                  new.row,
+                                  dat.avg.this.species[-(1:(which.row-1)),])
+  }
+  dat.avg.this.species$y.avg <- as.numeric(dat.avg.this.species$y.avg)
+  dat.avg.this.species$Treatment <- relevel(dat.avg.this.species$Treatment,
+                                            ref='Control')
   
   
   
@@ -112,7 +153,6 @@ for (ii in 1:length(species.vec))
   # Linear regression of average POPOR cover value, with treatment effect.
   # Note: MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of
   #       adding-zero approach.
-  dat.avg$Treatment <- relevel(dat.avg$Treatment, ref='Control')
   model_avg <- lm(as.numeric(y.avg)~Treatment, data=dat.avg)
   summary(model_avg) # p-value of 0.00984 suggests treatment is significant
   
@@ -146,5 +186,14 @@ for (ii in 1:length(species.vec))
 
 # Print the correlations between MWD and each species' cover value.
 cbind(species.vec, cor.vec)
+
+
+
+
+
+
+
+
+
 
 
