@@ -1,5 +1,5 @@
 rm(list=ls())
-setwd('~/19. UBC 2016 Winter Term 2/STAT 550/Case/SecondDraft from GitHub Apr. 8')
+setwd('~/19. UBC 2016 Winter Term 2/STAT 550/Case/Code')
 
 library('ggplot2') # for plotting
 library('lme4') # for mixed-effects models
@@ -28,34 +28,60 @@ tapply(pc$Cover.value, pc$Treatment, table)
 # Grad Analysis:
 ##############################
 
-# Obtain the species of interest.
-all.species <- c('POPR') # CHANGE THIS TO INCLUDE ALL THE SPECIES IN THE DATASET
+# Obtain the relevant species.
+# Note: The client said they are interested in POPR, PSSP, POJU, HECO,
+#       ALCE, ANDI, TAOF, SOIL and BRYO, as well as anything with a cover
+#       greater than 5% across all the sites.
+#     : None of the species occurred in all of the 400 sites (4 blocks x
+#       2 treatments × 5 transects × 10 samples per transect), although HECO
+#       and LITT were close. The rest occurred in below half of the sites.
+#       So, we change our criterion to choose species whose averages over
+#       the (occurring) transects and plots, for every block-treatment
+#       combination, are all greater than 5%.
+summary(pc$Species)
+all.species <- levels(pc$Species)
+interesting <- c('POPR', 'PSSP', 'POJU', 'HECO', 'ALCE', 'ANDI', 'TAOF',
+                 'SOIL', 'BRYO')
+with(pc, table(Species, Block))
+with(pc, table(Species, Treatment))
 species.vec <- NULL
 for (ii in 1:length(all.species))
 {
   # Obtain the subset of the data corresponding to this species.
   species.try <- all.species[ii]
   pc.sub.try <- subset(pc, Species==species.try)
-  pc.sub.try <- pc.sub.try[ ,c(3,4,9)]
+  pc.sub.try <- pc.sub.try[ ,c(3,4,5,6,9)]
   
-  # Table of counts for each block, by treatment group, for this species.
+  # Check if this species occurrs in every block-treatment combination.
+  # Note: entries.try is the table of counts for each block, by treatment
+  #       group, for this species.
   entries.try <- table(pc.sub.try$Block, pc.sub.try$Treatment)
   which.entries.miss.try <- which(entries.try==0, arr.ind=TRUE)
+  is.in.all.combs <- ifelse(test=(nrow(which.entries.miss.try)==0), yes=1,
+                            no=0)
   
-  # (Use this information to determine whether this species should be
-  #  included in the analysis..)
-  ... #(?)
-  if (...)
+  # Obtain averages over the (occurring) transects and plots, for every
+  # (occurring) block-treatment combination.
+  by_blockTrt.try <- group_by(pc.sub.try, Block, Treatment)
+  #dat.avg.try <- summarise(by_blockTrt.try, y.avg=sum(Cover.value)/50)
+  dat.avg.try2 <- summarise(by_blockTrt.try, y.avg=mean(Cover.value))
+  print(species.try)
+  print(dat.avg.try2)
+  all.occurring.greater.than5 <- ifelse(test=(sum(dat.avg.try2$y.avg<5)==0),
+                                        yes=1, no=0)
+  all.greater.than5 <- is.in.all.combs * all.occurring.greater.than5
+  
+  # Determine whether the species should be included.
+  if ((species.try%in%interesting) || (all.greater.than5))
   {
     species.vec <- c(species.vec, species.try)
   }
 }
-species.vec <- c('POPR') # WILL DELETE THIS LINE WHEN THE ABOVE LOOP IS COMPLETE
+print(species.vec)
 
 # Obtain the MWD averages (to be used in calculating the correlations).
-# WHY REORDERING!?!?!?
 a <- group_by(soil, Block, Treatment) %>%
-  summarise(mean(MWD))
+     summarise(mean(MWD))
 b <- a$`mean(MWD)`
 mean.MWD <- b
 
@@ -84,16 +110,19 @@ for (ii in 1:length(species.vec))
   by_blockTrt.this.species <- group_by(pc.this.species, Block, Treatment)
   dat.avg.this.species <- summarise(by_blockTrt.this.species,
                                     y.avg=sum(Cover.value)/50)
-  for (jj in 1:length(which.entries.miss))
+  if (length(which.entries.miss) > 0)
   {
-    which.row <- which.entries.miss[jj]
-    which.block <- toString(which.entries.miss.ind[jj,1])
-    which.trt <- ifelse(test=(which.entries.miss.ind[jj,2]==1), yes='Biosolids',
-                        no='Control')
-    new.row <- c(which.block, which.trt, 0)
-    dat.avg.this.species <- rbind(dat.avg.this.species[1:(which.row-1),],
-                                  new.row,
-                                  dat.avg.this.species[-(1:(which.row-1)),])
+    for (jj in 1:length(which.entries.miss))
+    {
+      which.row <- which.entries.miss[jj]
+      which.block <- toString(which.entries.miss.ind[jj,1])
+      which.trt <- ifelse(test=(which.entries.miss.ind[jj,2]==1), yes='Biosolids',
+                          no='Control')
+      new.row <- c(which.block, which.trt, 0)
+      dat.avg.this.species <- rbind(dat.avg.this.species[1:(which.row-1),],
+                                    new.row,
+                                    dat.avg.this.species[-(1:(which.row-1)),])
+    }
   }
   dat.avg.this.species$y.avg <- as.numeric(dat.avg.this.species$y.avg)
   
@@ -108,48 +137,50 @@ for (ii in 1:length(species.vec))
   
   # Normal Q-Q plot of cover value for this species.
   # Note: Strange behaviour due to discreteness.
-  qqnorm(pc.this.species$Cover.value)
+  #qqnorm(pc.this.species$Cover.value)
   
   # Boxplots of cover value for this species, for the two treatments.
-  #ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
-  #       data=pc.this.species) +
-  #  geom_boxplot() +
-  #  geom_point()
+  #print(ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
+  #             data=pc.this.species) +
+  #      geom_boxplot() +
+  #      geom_point())
   
   # Boxplot of cover value for this species, for the two treatments,
   # across the four blocks.
-  #ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
-  #       data=pc.this.species) +
-  #  geom_boxplot() +
-  #  geom_point() +
-  #  facet_wrap(~Block)
+  #print(ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
+  #             data=pc.this.species) +
+  #      geom_boxplot() +
+  #      geom_point() +
+  #      facet_wrap(~Block))
   
   # Boxplot of average cover value for this species, for the two treatments.
-  ggplot(aes(y=y.avg, x=Treatment, fill=Treatment, alpha=0.4),
-         data=dat.avg.this.species) +
-    geom_boxplot() +
-    geom_point() +
-    labs(y=paste(this.species,' Cover Value (%)',sep=''),
-         title=paste('Boxplot of ',this.species,' Cover Value'),sep='')
+  print(ggplot(aes(y=y.avg, x=Treatment, fill=Treatment, alpha=0.4),
+                   data=dat.avg.this.species) +
+        geom_boxplot() +
+        geom_point() +
+        labs(y=paste(this.species,' Cover Value (%)',sep=''),
+             title=paste('Boxplot of ',this.species,' Cover Value'),sep=''))
   
   # Interaction plot for block and treatment, with cover value for this
   # species as the response.
-  #ggplot(aes(x=Block, y=Cover.value, group=Treatment, colour=Treatment),
-  #       data=pc.this.species) +
-  #  stat_summary(fun.y='mean', geom='line') +
-  #  labs(x='Block', y=paste(this.species,' Cover Value',sep=''),
-  #       title=paste('Change in ',this.species,'
-  #                   Cover Value over Different Blocks'),sep='')
+  #print(ggplot(aes(x=Block, y=Cover.value, group=Treatment,
+  #                 colour=Treatment),
+  #             data=pc.this.species) +
+  #      stat_summary(fun.y='mean', geom='line') +
+  #      labs(x='Block', y=paste(this.species,' Cover Value',sep=''),
+  #           title=paste('Change in ',this.species,'
+  #                        Cover Value over Different Blocks'),sep=''))
   
   # Interaction plot for block and treatment, with average cover value for 
   # this species as the response.
-  ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment),
-         data=dat.avg.this.species) +
-    geom_point() +
-    geom_line() +
-    labs(x='Block', y=paste(this.species,' Cover Value (%)',sep=''),
-         title=paste('Comparison of ',this.species,
-                     ' Cover Values between Biosolids and Control',sep=''))
+  print(ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment),
+               data=dat.avg.this.species) +
+        geom_point() +
+        geom_line() +
+        labs(x='Block', y=paste(this.species,' Cover Value (%)',sep=''),
+             title=paste('Comparison of ',this.species,
+                         ' Cover Values between Biosolids and Control',
+                         sep='')))
   
   # Linear regression of average cover value for this species, with treatment
   # effect.
