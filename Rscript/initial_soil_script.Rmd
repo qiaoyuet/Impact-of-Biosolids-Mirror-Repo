@@ -38,6 +38,7 @@ group_by(soil,Date,Treatment) %>%
 hist(soil$MWD, xlab="MWD", main = "Histogram of MWD")
 
 ggplot(aes(MWD, fill = Treatment, alpha = 0.4), data=soil) + geom_density() + facet_wrap(~Date)
+
 ggplot(aes(y=MWD, x=Treatment, fill = Treatment, alpha = 0.4), data=soil) + geom_boxplot() + geom_point() + facet_wrap(~Date)
 tapply(soil$MWD, soil$Treatment, mean)
 tapply(soil$MWD, soil$Treatment, sd)
@@ -108,8 +109,6 @@ sort(b_all_coef$DateJune)
 # estimate with 95% Confidence interval is: 0.838 (0.719, 0.956)
 sort(b_all_coef$`Treatmentbio:DateOct`)
 # estimate with 95% Confidence interval is: 0.240 (0.085, 0.409)
-
-
 ```
 
 
@@ -179,29 +178,30 @@ ggplot(aes(y=Cover.value, x=Treatment, fill = Treatment, alpha = 0.4), data=pc.s
 
 ### Analysis
 ```{r}
-pc$Block <- as.factor(pc$Block)
-pc.subset <- subset(pc, Species == "POPR")
-pc.subset <- pc.subset[ ,c(3,4,9)]
-
-by_blockTrt <- group_by(pc.subset, Block, Treatment)
-dat.avg<-summarise(by_blockTrt, y.avg=sum(Cover.value)/50)
-add2control <- c("2","Control",0)
-dat.avg[8, ] <- add2control
-dat.avg
-
 dat.avg$Treatment <- relevel(dat.avg$Treatment, ref = "Control")
 model_avg <- lm(as.numeric(y.avg) ~ Treatment, data = dat.avg)
 summary(model_avg)
 # MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of adding-zero approach
 ```
 
-### Correlation between Plant Cover and MWD
+### Correlation between Plant Cover and MWD (using the whole dataset, not a specific species)
 ```{r}
-a<-group_by(soil,Block,Treatment) %>%
+mean_mwd <- group_by(soil,Block,Treatment) %>%
   summarise(mean(MWD))
-b<-a$`mean(MWD)`
-mean.MWD<-c(b[1], b[2], b[3], b[5], b[6], b[7], b[8], b[4])
-mean.cv<-as.numeric(as.character(dat.avg$y.avg))
+x <- mean_mwd$`mean(MWD)`
+
+cv_b_tr <- group_by(pc, Block, Treatment)
+mean_cv <- summarise(cv_b_tr,sum(Cover.value)/50)
+y<-mean_cv$`sum(Cover.value)/50`
+
+cor(x,y)
+```
+
+### Correlation between POPR Plant Cover and MWD
+```{r}
+#re-arrange the order to match with the order of dat.avg
+mean.MWD <- c(x[1], x[2], x[3], x[5], x[6], x[7], x[8], x[4])
+mean.cv <- as.numeric(as.character(dat.avg$y.avg))
 cor(mean.MWD, mean.cv)
 ```
 
