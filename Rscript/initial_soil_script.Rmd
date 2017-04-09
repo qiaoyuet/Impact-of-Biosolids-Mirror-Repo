@@ -186,6 +186,14 @@ summary(model_avg)
 
 ### Correlation between Plant Cover and MWD (using the whole dataset, not a specific species)
 ```{r}
+# use original dataset without relevel
+soil<-read.table("MWD.csv", sep = ",", header = T)
+Transect.f<-as.factor(soil$Transect)
+Date.f = factor(soil$Date,levels(soil$Date)[c(1, 3, 2, 4)])
+pc <- read.csv("plant_cover.csv", header = T)
+pc$Block <- as.factor(pc$Block)
+pc.subset <- subset(pc, Species == "POPR")
+pc.subset <- pc.subset[ ,c(3,4,9)]
 mean_mwd <- group_by(soil,Block,Treatment) %>%
   summarise(mean(MWD))
 x <- mean_mwd$`mean(MWD)`
@@ -199,8 +207,12 @@ cor(x,y)
 
 ### Correlation between POPR Plant Cover and MWD
 ```{r}
-#re-arrange the order to match with the order of dat.avg
+mean_mwd <- group_by(soil,Block,Treatment) %>%
+  summarise(mean(MWD))
+x <- mean_mwd$`mean(MWD)`
 mean.MWD <- c(x[1], x[2], x[3], x[5], x[6], x[7], x[8], x[4])
+#re-arrange the order to match with the order of dat.avg
+
 mean.cv <- as.numeric(as.character(dat.avg$y.avg))
 cor(mean.MWD, mean.cv)
 ```
