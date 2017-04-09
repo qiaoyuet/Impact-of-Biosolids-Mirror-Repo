@@ -108,11 +108,11 @@ biosolids and control for all species. The histogram (Figure 2.2)
 provides a better visualization for the results in Table 2.2. We observe
 that when changing from control group to biosolids group, there is a
 dramatic decrease in number of observations with low cover values
-(\<=37.5), and an increase in number of observations with high cover
-values (\>37.5). For the specific species POPR, Table 2.3 summarizes the
-frequencies of observations under 6 levels of cover values for biosolids
-and control respectively. The counts under two treatments are quite
-different, indicating that biosolids is potentially effective.
+(&lt;=37.5), and an increase in number of observations with high cover
+values (&gt;37.5). For the specific species POPR, Table 2.3 summarizes
+the frequencies of observations under 6 levels of cover values for
+biosolids and control respectively. The counts under two treatments are
+quite different, indicating that biosolids is potentially effective.
 
     ## Source: local data frame [8 x 4]
     ## Groups: Block [?]
@@ -213,10 +213,10 @@ independent. There are two sources of pseudo replication in our case:
 -   The seven soil samples along one transect are pseudo replicates.
     Because the soil composition measurement in one place will be highly
     correlated with that five feet away.  
--   In every half of the block, the three transects are pseudo
-    replicates. Because they belong to the same experimental unit. The
-    conditions affecting one transect will also affect another transect
-    in that half of the block.
+-   In every half of the block, the three transects are
+    pseudo replicates. Because they belong to the same
+    experimental unit. The conditions affecting one transect will also
+    affect another transect in that half of the block.
 
 Therefore, both repeated measurements and pseudoreplication violate the
 assumption of independence that is assumed in linear models. The way we
@@ -282,13 +282,13 @@ effect, date effect and treatment-date interaction effect respectively:
 Two treatment types and four sampling dates give us eight combinations.
 The intercept estimate 0.88 is the mean MWD of control group in April
 (baseline group). From April to June, the mean MWD of control group
-increase by 0.838mm [0.719mm, 0.956mm] with 95% confidence. This is the
-most dramatic increase in MWD among the four sampling dates as Figure
-4.3 shows. Moreover, all the estimates for the main effects of dates are
-positive. It means that MWD always increases as sampling dates change
-compared to April. As for the main effect of biosolids on soil, mean MWD
-in biosolids group increases 0.172mm [0.054mm, 0.261mm] compared to the
-control group in April with 95% confidence.
+increase by 0.838mm \[0.719mm, 0.956mm\] with 95% confidence. This is
+the most dramatic increase in MWD among the four sampling dates as
+Figure 4.3 shows. Moreover, all the estimates for the main effects of
+dates are positive. It means that MWD always increases as sampling dates
+change compared to April. As for the main effect of biosolids on soil,
+mean MWD in biosolids group increases 0.172mm \[0.054mm, 0.261mm\]
+compared to the control group in April with 95% confidence.
 
 The treatment-date interaction effect accounts for the extra change in
 MWD that is not explained by adding up the main effect of treatment and
@@ -299,7 +299,7 @@ from April to October. There is another increase of 0.172mm in mean MWD
 from control group to biosolids group. But they do not add up to
 0.788mm. The rest of the difference between the two groups is explained
 by the interaction effect between biosolids and October (0.240mm with
-95% confidence interval [0.085mm, 0.409mm]). Visually from the
+95% confidence interval \[0.085mm, 0.409mm\]). Visually from the
 interaction plot (Figure 4.3), we can see that the change in mean MWD
 over the four sampling dates is quite different for the two treatment
 groups. Especially from June to August, the mean MWD increase for
@@ -315,19 +315,19 @@ Figure 4.3 Change in mean of MWD over the four sampling dates.
 
 We check the following assumptions for linear model:
 
--   Normality assumption is checked by histogram of cover value (Figure
-    4.4). The distribution of cover values of POPR does not look normal.
-    This is potentially due to the fact that cover value is not normally
-    distributed in nature. In addition, the sample size of the averaged
-    dataset is too small to appear normal. Since averaging and using
-    linear regression is our second best solution to deal with discrete
-    cover value, we assume that this violation of normality would not
-    create significant bias on results.  
+-   Normality assumption is checked by histogram of cover value
+    (Figure 4.4). The distribution of cover values of POPR does not
+    look normal. This is potentially due to the fact that cover value is
+    not normally distributed in nature. In addition, the sample size of
+    the averaged dataset is too small to appear normal. Since averaging
+    and using linear regression is our second best solution to deal with
+    discrete cover value, we assume that this violation of normality
+    would not create significant bias on results.  
 -   Common variance assumption is achieved by a weaker condition that we
     have equal number of observations (n=4) under biosolids and
     control.  
--   Independence is automatically achieved by averaging dependent
-    observations. Since we only have one observation from each
+-   Independence is automatically achieved by averaging
+    dependent observations. Since we only have one observation from each
     experimental unit (half of a block), the observations satisfy the
     independence assumption.
 
@@ -341,7 +341,7 @@ obtain a p-value of 0.00984 for biosolids treatment. With a p-value
 smaller than 0.01, we find strong evidence to reject the null hypothesis
 that biosolids and control produce indifferent cover values. When
 changing from control to biosolids, we expect an estimated increase of
-25.738% [8.815%, 42.661%] in cover value of POPR with 95% confidence.
+25.738% \[8.815%, 42.661%\] in cover value of POPR with 95% confidence.
 
 ##### Correlation between MWD and cover value
 
