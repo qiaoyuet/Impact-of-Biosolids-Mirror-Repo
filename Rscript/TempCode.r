@@ -29,8 +29,8 @@ tapply(pc$Cover.value, pc$Treatment, table)
 ##############################
 
 # Obtain the species of interest.
-all.species <- c('POPR')
-species.vec <- c('POPR')
+all.species <- c('POPR') # CHANGE THIS TO INCLUDE ALL THE SPECIES IN THE DATASET
+species.vec <- NULL
 for (ii in 1:length(all.species))
 {
   # Obtain the subset of the data corresponding to this species.
@@ -42,24 +42,27 @@ for (ii in 1:length(all.species))
   entries.try <- table(pc.sub.try$Block, pc.sub.try$Treatment)
   which.entries.miss.try <- which(entries.try==0, arr.ind=TRUE)
   
-  
-  
-  
+  # (Use this information to determine whether this species should be
+  #  included in the analysis..)
+  ... #(?)
+  if (...)
+  {
+    species.vec <- c(species.vec, species.try)
+  }
 }
-
-
-
-
-
+species.vec <- c('POPR') # WILL DELETE THIS LINE WHEN THE ABOVE LOOP IS COMPLETE
 
 # Obtain the MWD averages (to be used in calculating the correlations).
 # WHY REORDERING!?!?!?
 a <- group_by(soil, Block, Treatment) %>%
   summarise(mean(MWD))
 b <- a$`mean(MWD)`
-mean.MWD <- c(b[1], b[2], b[3], b[5], b[6], b[7], b[8], b[4])
+mean.MWD <- b
 
-# Run
+# Loop over all the relevant species.
+model.avg.list <-list()
+p.vals.vec <- rep(NA, times=length(species.vec))
+coefs.vec <- rep(NA, times=length(species.vec))
 cor.vec <- rep(NA, times=length(species.vec))
 for (ii in 1:length(species.vec))
 {
@@ -70,43 +73,7 @@ for (ii in 1:length(species.vec))
   
   # Table of counts for each class of cover value, by treatment group, for
   # this species.
-  print(tapply(pc.this.species$Cover.value, pc.this.species$Treatment, table))
-  
-  #########################
-  # Modelling cover value:
-  #########################
-  
-  # Histogram of cover value for this species.
-  hist(pc.this.species$Cover.value,
-       main=paste('Histogram of cover value for ',this.species,sep=''),
-       xlab=paste(this.species,' Cover Value (%)',sep=''), col='mistyrose')
-  
-  # Normal Q-Q plot of cover value for this species.
-  # Note: Strange behaviour due to discreteness.
-  qqnorm(pc.this.species$Cover.value)
-  
-  # Boxplots of cover value for this species, for the two treatments.
-  ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
-         data=pc.this.species) +
-    geom_boxplot() +
-    geom_point()
-  
-  # Boxplot of cover value for this species, for the two treatments,
-  # across the four blocks.
-  ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
-         data=pc.this.species) +
-    geom_boxplot() +
-    geom_point() +
-    facet_wrap(~Block)
-  
-  # Interaction plot for block and treatment, with cover value for this
-  # species as the response.
-  ggplot(aes(x=Block, y=Cover.value, group=Treatment, colour=Treatment),
-         data=pc.this.species) +
-    stat_summary(fun.y='mean', geom='line') +
-    labs(x='Block', y=paste(this.species,' Cover Value',sep=''),
-         title=paste('Change in ',this.species,'
-                     Cover Value over Different Blocks'),sep='')
+  #print(tapply(pc.this.species$Cover.value, pc.this.species$Treatment, table))
   
   # Table of counts for each block, by treatment group, for this species.
   entries <- table(pc.this.species$Block, pc.this.species$Treatment)
@@ -129,71 +96,84 @@ for (ii in 1:length(species.vec))
                                   dat.avg.this.species[-(1:(which.row-1)),])
   }
   dat.avg.this.species$y.avg <- as.numeric(dat.avg.this.species$y.avg)
-  dat.avg.this.species$Treatment <- relevel(dat.avg.this.species$Treatment,
-                                            ref='Control')
   
+  #########################
+  # Modelling cover value:
+  #########################
   
+  # Histogram of cover value for this species.
+  hist(pc.this.species$Cover.value,
+       main=paste('Histogram of cover value for ',this.species,sep=''),
+       xlab=paste(this.species,' Cover Value (%)',sep=''), col='mistyrose')
   
+  # Normal Q-Q plot of cover value for this species.
+  # Note: Strange behaviour due to discreteness.
+  qqnorm(pc.this.species$Cover.value)
   
+  # Boxplots of cover value for this species, for the two treatments.
+  #ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
+  #       data=pc.this.species) +
+  #  geom_boxplot() +
+  #  geom_point()
   
-  # Interaction plot for block and treatment, with POPR cover value as the
-  # response (Figure 2.3).
-  # Note: pc.subset has 120 observations of 3 variables: Block, Treatment
-  #       and Cover.value.
-  #     : dat.avg gives the average cover value for each block-treatment
-  #       combination, since 50 is the number of observations you would expect
-  #       to see (5 transects × 10 samples per transect), assuming all missing
-  #       rows are due to a cover value of 0.
-  ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment), data=dat.avg) +
-    geom_point() +
-    geom_line() +
-    labs(x='Block', y='POPR Cover Value (%)',
-         title='Comparison of POPR Cover Values between Biosolids and Control')
+  # Boxplot of cover value for this species, for the two treatments,
+  # across the four blocks.
+  #ggplot(aes(y=Cover.value, x=Treatment, fill=Treatment, alpha=0.4),
+  #       data=pc.this.species) +
+  #  geom_boxplot() +
+  #  geom_point() +
+  #  facet_wrap(~Block)
   
-  # Linear regression of average POPOR cover value, with treatment effect.
-  # Note: MS(Treatment)/MS(Treatment:Block) = F statistic from lm output of
-  #       adding-zero approach.
-  model_avg <- lm(as.numeric(y.avg)~Treatment, data=dat.avg)
-  summary(model_avg) # p-value of 0.00984 suggests treatment is significant
-  
-  # Boxplot of POPR cover value over the two treatments (Figure 2.4).
-  ggplot(aes(y=y.avg, x=Treatment, fill=Treatment, alpha=0.4), data=dat.avg) +
+  # Boxplot of average cover value for this species, for the two treatments.
+  ggplot(aes(y=y.avg, x=Treatment, fill=Treatment, alpha=0.4),
+         data=dat.avg.this.species) +
     geom_boxplot() +
     geom_point() +
-    labs(y='POPR Cover Value (%)', title='Boxplot of POPR Cover Value')
+    labs(y=paste(this.species,' Cover Value (%)',sep=''),
+         title=paste('Boxplot of ',this.species,' Cover Value'),sep='')
   
+  # Interaction plot for block and treatment, with cover value for this
+  # species as the response.
+  #ggplot(aes(x=Block, y=Cover.value, group=Treatment, colour=Treatment),
+  #       data=pc.this.species) +
+  #  stat_summary(fun.y='mean', geom='line') +
+  #  labs(x='Block', y=paste(this.species,' Cover Value',sep=''),
+  #       title=paste('Change in ',this.species,'
+  #                   Cover Value over Different Blocks'),sep='')
   
+  # Interaction plot for block and treatment, with average cover value for 
+  # this species as the response.
+  ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment),
+         data=dat.avg.this.species) +
+    geom_point() +
+    geom_line() +
+    labs(x='Block', y=paste(this.species,' Cover Value (%)',sep=''),
+         title=paste('Comparison of ',this.species,
+                     ' Cover Values between Biosolids and Control',sep=''))
   
-  
-  
-  
-  
-  
-  
+  # Linear regression of average cover value for this species, with treatment
+  # effect.
+  dat.avg.this.species$Treatment <- relevel(dat.avg.this.species$Treatment,
+                                            ref='Control')
+  model_avg.this.species <- lm(as.numeric(y.avg)~Treatment,
+                               data=dat.avg.this.species)
+  print(summary(model_avg.this.species))
+  model.avg.list[[ii]] <- model_avg.this.species
+  p.vals.vec[ii] <- summary(model_avg.this.species)$coefficients[2,4]
+  coefs.vec[ii] <- summary(model_avg.this.species)$coefficients[2,1]
+
   #########################
   # Correlations:
   #########################
   
-  # Find the correlation between MWD and each species' cover value.
-  this.mean.cv <- as.numeric(as.character(this.dat.avg$y.avg))
-  cor.vec[ii] <- cor(mean.MWD, this.mean.cv)
+  # Find the correlation between MWD and the average cover value for this
+  # species.
+  mean.cv.this.species <- as.numeric(as.character(dat.avg.this.species$y.avg))
+  cor.vec[ii] <- cor(mean.MWD, mean.cv.this.species)
 }
 
-
-# Print
-
-
+# Print the linear regression p-values for each species.
+cbind(species.vec, p.vals.vec, coefs.vec)
 
 # Print the correlations between MWD and each species' cover value.
 cbind(species.vec, cor.vec)
-
-
-
-
-
-
-
-
-
-
-
