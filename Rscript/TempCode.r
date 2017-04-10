@@ -10,6 +10,7 @@ library('base') # for ...
 
 # Import the MWD data.
 soil <- read.table('MWD.csv', sep=',', header=T)
+soil.unreleveled <- soil
 soil$Treatment <- relevel(soil$Treatment, ref='con')
 head(soil)
 str(soil)
@@ -80,7 +81,7 @@ for (ii in 1:length(all.species))
 print(species.vec)
 
 # Obtain the MWD averages (to be used in calculating the correlations).
-a <- group_by(soil, Block, Treatment) %>%
+a <- group_by(soil.unreleveled, Block, Treatment) %>%
      summarise(mean(MWD))
 b <- a$`mean(MWD)`
 mean.MWD <- b
@@ -96,6 +97,7 @@ for (ii in 1:length(species.vec))
   this.species <- species.vec[ii]
   pc.this.species <- subset(pc, Species==this.species)
   pc.this.species <- pc.this.species[ ,c(3,4,9)]
+  print(this.species)
   
   # Table of counts for each class of cover value, by treatment group, for
   # this species.
@@ -125,9 +127,10 @@ for (ii in 1:length(species.vec))
     }
   }
   dat.avg.this.species$y.avg <- as.numeric(dat.avg.this.species$y.avg)
+  print(dat.avg.this.species)
   
   #########################
-  # Modelling cover value:
+  # Plots:
   #########################
   
   # Histogram of cover value for this species.
@@ -159,7 +162,7 @@ for (ii in 1:length(species.vec))
         geom_boxplot() +
         geom_point() +
         labs(y=paste(this.species,' Cover Value (%)',sep=''),
-             title=paste('Boxplot of ',this.species,' Cover Value'),sep=''))
+             title=paste('Boxplot of ',this.species,' Cover Value',sep='')))
   
   # Interaction plot for block and treatment, with cover value for this
   # species as the response.
@@ -173,14 +176,18 @@ for (ii in 1:length(species.vec))
   
   # Interaction plot for block and treatment, with average cover value for 
   # this species as the response.
-  print(ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment),
-               data=dat.avg.this.species) +
-        geom_point() +
-        geom_line() +
-        labs(x='Block', y=paste(this.species,' Cover Value (%)',sep=''),
-             title=paste('Comparison of ',this.species,
-                         ' Cover Values between Biosolids and Control',
-                         sep='')))
+  #print(ggplot(aes(x=Block, y=y.avg, group=Treatment, colour=Treatment),
+  #             data=dat.avg.this.species) +
+  #      geom_point() +
+  #      geom_line() +
+  #      labs(x='Block', y=paste(this.species,' Cover Value (%)',sep=''),
+  #           title=paste('Comparison of ',this.species,
+  #                       ' Cover Values between Biosolids and Control',
+  #                       sep='')))
+  
+  #########################
+  # Modelling cover value:
+  #########################
   
   # Linear regression of average cover value for this species, with treatment
   # effect.
