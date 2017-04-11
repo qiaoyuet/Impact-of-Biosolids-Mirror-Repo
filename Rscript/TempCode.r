@@ -4,7 +4,7 @@ setwd('~/19. UBC 2016 Winter Term 2/STAT 550/Case/Code')
 library('ggplot2') # for plotting
 library('lme4') # for mixed-effects models
 library('reshape2') # for ...
-library('dplyr') # for %>% & group_by
+library('dplyr') # for %>%
 library('MASS') # for ...
 library('base') # for ...
 
@@ -90,6 +90,9 @@ mean.MWD <- b
 model.avg.list <-list()
 p.vals.vec <- rep(NA, times=length(species.vec))
 coefs.vec <- rep(NA, times=length(species.vec))
+nonparam.model.list <-list()
+nonparam.p.vals.vec <- rep(NA, times=length(species.vec))
+nonparam.coefs.vec <- rep(NA, times=length(species.vec))
 cor.vec <- rep(NA, times=length(species.vec))
 for (ii in 1:length(species.vec))
 {
@@ -199,7 +202,30 @@ for (ii in 1:length(species.vec))
   model.avg.list[[ii]] <- model_avg.this.species
   p.vals.vec[ii] <- summary(model_avg.this.species)$coefficients[2,4]
   coefs.vec[ii] <- summary(model_avg.this.species)$coefficients[2,1]
-
+  
+  #########################
+  # Non-parametric test:
+  #########################
+  
+  # Parametric tests:
+  #t.test(x=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Biosolids'],
+  #       y=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Control'],
+  #       alternative='two.sided', mu=0, paired=FALSE, var.equal=TRUE,
+  #       conf.level=0.95)
+  #t.test(x=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Biosolids'],
+  #       y=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Control'],
+  #       alternative='two.sided', mu=0, paired=TRUE, var.equal=TRUE,
+  #       conf.level=0.95)
+  
+  # Non-parametric test:
+  wilcox.this.species <- wilcox.test(x=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Biosolids'],
+                                     y=dat.avg.this.species$y.avg[dat.avg.this.species$Treatment=='Control'],
+                                     alternative='two.sided', mu=0, paired=TRUE,
+                                     conf.int=TRUE, conf.level=0.95)
+  nonparam.model.list[[ii]] <- wilcox.this.species
+  nonparam.p.vals.vec[ii] <- wilcox.this.species$p.value
+  nonparam.coefs.vec[ii] <- wilcox.this.species$estimate
+  
   #########################
   # Correlations:
   #########################
@@ -210,8 +236,11 @@ for (ii in 1:length(species.vec))
   cor.vec[ii] <- cor(mean.MWD, mean.cv.this.species)
 }
 
-# Print the linear regression p-values for each species.
+# Print the linear regression p-values and coefficients for each species.
 cbind(species.vec, p.vals.vec, coefs.vec)
+
+# Print the non-parametric p-values and estimates for each species.
+cbind(species.vec, nonparam.p.vals.vec, nonparam.coefs.vec)
 
 # Print the correlations between MWD and each species' cover value.
 cbind(species.vec, cor.vec)
