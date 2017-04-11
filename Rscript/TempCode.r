@@ -4,7 +4,7 @@ setwd('~/19. UBC 2016 Winter Term 2/STAT 550/Case/Code')
 library('ggplot2') # for plotting
 library('lme4') # for mixed-effects models
 library('reshape2') # for ...
-library('dplyr') # for %>%
+library('dplyr') # for %>% & group_by
 library('MASS') # for ...
 library('base') # for ...
 
@@ -215,3 +215,4 @@ cbind(species.vec, p.vals.vec, coefs.vec)
 
 # Print the correlations between MWD and each species' cover value.
 cbind(species.vec, cor.vec)
+
