@@ -103,36 +103,20 @@ the plant species name, block index, treatment type, plot number, cover
 class and cover value. The total number of plant assessments is 400 (4
 blocks × 2 treatments × 5 transects × 10 samples per transect). If
 researchers did not observe a species for certain plots, the entry of
-that species is omitted instead of being recorded as 0. In the following
-analysis, we specifically investigate one species, Poa pratensis (POPR).
+that species was omitted instead of being recorded as 0. In the
+following analysis, we specifically investigate one species, Poa
+pratensis (POPR).
 
 The histogram (Figure 2.2) describes the frequencies of cover values
-appearing under biosolids and control for all species. Biosolids group
-has more observations with high cover values, while control group has
-more observations with low cover values. For the specific species POPR,
-Table 2.2 summarizes the frequencies of observations under 6 levels of
-cover values for biosolids and control respectively. The counts under
-two treatments are quite different, indicating that biosolids is
-potentially effective.
+under biosolids and control for all species. Biosolids group has more
+observations with high cover values, while control group has more
+observations with low cover values. For the specific species POPR, Table
+2.2 summarizes the frequencies of observations under 6 levels of cover
+values for biosolids and control respectively. The counts under two
+treatments are quite different, indicating that biosolids is potentially
+effective.
 
-    ## Source: local data frame [8 x 4]
-    ## Groups: Block [?]
-    ## 
-    ##    Block Treatment `mean(Cover.value)` `sd(Cover.value)`
-    ##   <fctr>    <fctr>               <dbl>             <dbl>
-    ## 1      1 Biosolids            32.70764          35.28365
-    ## 2      1   Control            17.30952          18.18493
-    ## 3      2 Biosolids            28.90365          32.73254
-    ## 4      2   Control            15.17857          17.42308
-    ## 5      3 Biosolids            40.47071          38.97941
-    ## 6      3   Control            21.96884          23.51373
-    ## 7      4 Biosolids            33.51124          36.84526
-    ## 8      4   Control            16.77356          20.23028
-
-Table 2.1 Mean and standard deviation of cover value by block and
-treatment type.
-
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 Figure 2.2 Overlapped histogram in each class of cover value for all
 species. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5.
@@ -149,8 +133,7 @@ species. The cover values are 2.5, 15, 37.5, 62.5, 85 and 97.5.
 
 Table 2.2 Frequencies of observations in each class of cover value
 presented by treatment groups for species POPR. The cover values are
-2.5, 15, 37.5, 62.5, 85 and 97.5. The number under cover value is the
-count in that group.
+2.5, 15, 37.5, 62.5, 85 and 97.5.
 
 Figure 2.3 and 2.4 provide visualizations of change and variation in
 cover values under both biosolids and control for POPR. Each point
@@ -161,15 +144,15 @@ high. We also observe that the change in cover value for biosolids group
 is different in four blocks. But we do not consider any interaction
 effects involving block because they are not of interest.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 Figure 2.3 Comparison of species POPR cover values between control and
 biosolids group. Cover values in biosolids group are a lot higher than
 those in control group for all the blocks.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-Figure 2.4 Boxplots of cover value of species POPR in biosolids and
+Figure 2.4 Boxplot of cover value of species POPR in biosolids and
 control group.
 
 3. Methods
@@ -196,7 +179,7 @@ characteristics belonging to the same sampling location.
 
 Another feature is the transects setup. It results in the problem of
 “pseudoreplication” where replicated observations are not independent.
-There are two sources of pseudo replication in our case:
+There are two sources of pseudoreplication in our case:
 
 -   The seven soil samples along one transect are pseudo replicates.
     Because the soil composition measurement in one place is highly
@@ -248,11 +231,11 @@ sample quantiles from MWD dataset against the theoretical quantiles from
 the standard normal distribution. The fact that most of the points align
 well with the straight line suggests normality.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
 Figure 4.1 Histogram of MWD.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
 Figure 4.2 Normal quantile-quantile plot of MWD.
 
@@ -267,9 +250,9 @@ effect, date effect and treatment-date interaction effect respectively:
     interaction effect is significant at 1% significance level.
 
 Two treatment types and four sampling dates give us eight combinations.
-The intercept estimate 0.88 is the mean MWD of control group in April
+The estimated intercept 0.88 is the mean MWD of control group in April
 (baseline group). From April to June, the mean MWD of control group
-increase by 0.838mm [0.719mm, 0.956mm] with 95% confidence. This is the
+increases by 0.838mm [0.719mm, 0.956mm] with 95% confidence. This is the
 most dramatic increase in MWD among the four sampling dates as Figure
 4.3 shows. Moreover, all the estimates for the main effects of dates are
 positive. It means that MWD always increases as sampling dates change
@@ -290,12 +273,12 @@ by the interaction effect between biosolids and October (0.240mm with
 95% confidence interval [0.085mm, 0.409mm]). Visually from the
 interaction plot (Figure 4.3), we can see that the change in mean MWD
 over the four sampling dates is quite different for the two treatment
-groups. Especially from June to August, the mean MWD increase for
+groups. Especially from June to August, the mean MWD increases for
 biosolids group, while the mean MWD decreases for control group. This
 corroborates the significance of the interaction effect between
 treatment and date.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 Figure 4.3 Change in mean of MWD over the four sampling dates.
 
@@ -319,7 +302,7 @@ We check the following assumptions for linear model:
     experimental unit (half of a block), the observations satisfy the
     independence assumption.
 
-![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-12-1.png)
+![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
 Figure 4.4 Histogram of cover value for species POPR.
 
@@ -331,13 +314,13 @@ that biosolids and control produce indifferent cover values. When
 changing from control to biosolids, we expect an estimated increase of
 25.738% [8.815%, 42.661%] in cover value of POPR with 95% confidence.
 
-### Correlation between MWD and cover value
+### Correlation between MWD and POPR cover value
 
 Since there are an unequal number of observations of MWD and cover
 value, we test correlation using the eight means from the eight
 treatment-block combinations for both MWD and cover value. The estimated
 correlation is 0.645 which indicates a moderately strong positive
-relationship between MWD and cover value. It means that when soil
+relationship between MWD and POPR cover value. It means that when soil
 becomes more stable (larger MWD), the canopy cover of POPR increases,
 which is intuitive.
 
