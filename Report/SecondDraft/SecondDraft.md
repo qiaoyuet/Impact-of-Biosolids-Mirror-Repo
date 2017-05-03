@@ -142,13 +142,18 @@ combination. The observed cover values under control group are close to
 0 in all four blocks while the cover values under biosolids are quite
 high. We also observe that the change in cover value for biosolids group
 is different in four blocks. But we do not consider any interaction
-effects involving block because they are not of interest.
+effects involving block because they are not of interest. The error bars
+show standard errors of mean of cover values. The error bars in control
+group should have a lower bound of 0 since negative cover values are not
+intuitive. The standard error in Block 2, Control group has a value of 0
+since all observations have 0 cover values.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 Figure 2.3 Comparison of species POPR cover values between control and
 biosolids group. Cover values in biosolids group are a lot higher than
-those in control group for all the blocks.
+those in control group for all the blocks. The error bar indicates
+standard error of each mean cover value.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
@@ -192,10 +197,10 @@ There are two sources of pseudoreplication in our case:
 Therefore, both repeated measurements and pseudoreplication violate the
 assumption of independence that is assumed in linear models. The way we
 tackle this problem is to introduce a random block effect into the
-model. This mixed-effect linear model will then analyze the data in a
-way that is similar to randomized complete block design but with a
-random block effect. Although transect is not included in the model, it
-is not of particular interest to the researchers.
+model. This mixed-effect linear model then analyzes the data in a way
+that is similar to randomized complete block design but with a random
+block effect. Although transect is not included in the model, it is not
+of particular interest to the researchers.
 
 ### Long term impact of biosolids on plant cover
 
@@ -223,12 +228,15 @@ applies.
 
 ### Long term impact of biosolids on soil
 
-The normality assumption is validated by the histogram of MWD (Figure
-4.1) and normal quantile-quantile plot (Figure 4.2). The histogram shows
-that the sample distribution of MWD is approximately normal, indicating
-a normal underlying distribution of MWD. The normal QQ plot shows the
-sample quantiles from MWD dataset against the theoretical quantiles from
-the standard normal distribution. The fact that most of the points align
+Long term impact of biosolids on soil is analyzed by mixed effect model.
+First, we want to check the most important assumption of mixed effect
+model which is normality of the underlying population. The normality
+assumption is validated by the histogram of MWD (Figure 4.1) and normal
+quantile-quantile plot (Figure 4.2). The histogram shows that the sample
+distribution of MWD is approximately normal, indicating a normal
+underlying distribution of MWD. The normal QQ plot shows the sample
+quantiles from MWD dataset against the theoretical quantiles from the
+standard normal distribution. The fact that most of the points align
 well with the straight line suggests normality.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-8-1.png)
@@ -242,41 +250,41 @@ Figure 4.2 Normal quantile-quantile plot of MWD.
 We use Chi-square test to investigate the significance of treatment
 effect, date effect and treatment-date interaction effect respectively:
 
--   A p-value of 0.006 shows strong evidence that treatment main effect
-    is significant at 1% significance level.
--   A p-value less than 0.001 shows very strong evidence that date main
-    effect is significant even at 0.1% significance level.
--   A p-value of 0.008 shows strong evidence that treatment-date
-    interaction effect is significant at 1% significance level.
+P-values of 0.006, less than 0.001 and 0.008 respectively show strong
+evidence that the treatment and date main effects and the treatment-date
+interaction effect are all significant at 1% significance level. These
+results show that biosolids and application date affect the MWD both
+individually and interactively.
 
 Two treatment types and four sampling dates give us eight combinations.
-The estimated intercept 0.88 is the mean MWD of control group in April
-(baseline group). From April to June, the mean MWD of control group
-increases by 0.838mm [0.719mm, 0.956mm] with 95% confidence. This is the
-most dramatic increase in MWD among the four sampling dates as Figure
-4.3 shows. Moreover, all the estimates for the main effects of dates are
-positive. It means that MWD always increases as sampling dates change
-compared to April. Keeping date fixed in April, June, August, and
+The estimated intercept 0.88 is the mean of MWD of control group in
+April (baseline group). From April to June, the mean of MWD of control
+group increases by 0.838mm [0.719mm, 0.956mm] with 95% confidence. This
+is the most dramatic increase in MWD among the four sampling dates as
+Figure 4.3 shows. Moreover, all the estimates for the main effects of
+dates are positive. It means that MWD always increases as sampling dates
+change compared to April. Keeping date fixed in April, June, August, and
 October, MWD increases by 0.172mm [0.054mm, 0.261mm], 0.023mm [-0.235mm,
 0.248mm], 0.229mm [0.058mm, 0.422mm], and 0.412mm [0.265mm, 0.522mm]
-respectively with 95% confidence.
+respectively with 95% confidence. These increases are due to the
+treatment effect only.
 
 The treatment-date interaction effect accounts for the extra change in
 MWD that is not explained by adding up the main effect of treatment and
 date when compared with the baseline group. For example, the mean MWD
 for biosolids group in October is 1.668mm, which is 0.788mm larger than
-that for baseline group. There is an increase of 0.376mm in mean MWD
-from April to October. There is another increase of 0.172mm in mean MWD
-from control group to biosolids group. But they do not add up to
-0.788mm. The rest of the difference between the two groups is explained
-by the interaction effect between biosolids and October (0.240mm with
-95% confidence interval [0.085mm, 0.409mm]). Visually from the
-interaction plot (Figure 4.3), we can see that the change in mean MWD
-over the four sampling dates is quite different for the two treatment
-groups. Especially from June to August, the mean MWD increases for
-biosolids group, while the mean MWD decreases for control group. This
-corroborates the significance of the interaction effect between
-treatment and date.
+that for baseline group. There is an increase of 0.376mm in the mean of
+MWD from April to October. There is another increase of 0.172mm in the
+mean of MWD from control group to biosolids group. But they do not add
+up to 0.788mm. The rest of the difference between the two groups is
+explained by the interaction effect between biosolids and October
+(0.240mm with 95% confidence interval [0.085mm, 0.409mm]). Visually from
+the interaction plot (Figure 4.3), we can see that the change in the
+mean of MWD over the four sampling dates is quite different for the two
+treatment groups. Especially from June to August, the mean of MWD
+increases for biosolids group, while the mean of MWD decreases for
+control group. This corroborates the significance of the interaction
+effect between treatment and date.
 
 ![](SecondDraft_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
@@ -284,7 +292,9 @@ Figure 4.3 Change in mean of MWD over the four sampling dates.
 
 ### Long term impact of biosolids on plant cover
 
-We check the following assumptions for linear model:
+Long term impact of biosolids on plant cover is analyzed by a linear
+model. We check the following assumptions before applying a linear
+model:
 
 -   Normality assumption is checked by histogram of cover value (Figure
     4.4). The distribution of cover values of POPR does not look normal.
@@ -307,7 +317,7 @@ We check the following assumptions for linear model:
 Figure 4.4 Histogram of cover value for species POPR.
 
 After fitting a regression model with averaged cover value per block as
-response variable and treatment factor as explanatory variable, we
+a response variable and treatment factor as an explanatory variable, we
 obtain a p-value of 0.00984 for biosolids treatment. With a p-value
 smaller than 0.01, we find strong evidence to reject the null hypothesis
 that biosolids and control produce indifferent cover values. When
@@ -328,7 +338,7 @@ which is intuitive.
 -----------------------------------
 
 There is strong evidence that biosolids treatment and sampling dates
-have significant impact on improving soil stability. They affect MWD
+have a significant impact on improving soil stability. They affect MWD
 interactively instead of individually. There is also strong evidence
 that biosolids application increases the spread of species POPR. There
 is a moderate positive correlation between MWD and cover value. In
