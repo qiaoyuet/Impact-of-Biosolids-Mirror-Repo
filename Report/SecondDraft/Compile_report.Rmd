@@ -1,7 +1,7 @@
 ---
 title: "Impact of Biosolids on Soil Stability and Plant Cover"
-author: "Yidie Feng & Qiaoyue Tang"
-date: "5/03/2017"
+author: "Yidie Feng, Qiaoyue Tang, Sonja Surjanovic, Fatema Tuz Jhohura"
+date: "5/12/2017"
 output: pdf_document
 ---
 ```{r,warning=FALSE,message=FALSE,results='hide',include=FALSE}
@@ -9,14 +9,15 @@ library("ggplot2")
 library(lme4)
 library(reshape2)
 library(dplyr)
+library('knitr')
 ```
 ## Summary
 
-This report examines the effectiveness of biosolids, a treatment that potentially enhances soil activity by providing a food source through microbial activities. In particular, we compare the magnitude of Mean Weight Diameter (MWD), a parameter measuring soil stability, with and without biosolids treatment. We also compare the magnitude of cover value, a criterion for spread of plant species, between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on spread of plant species is addressed by linear regression. The correlation between MWD and cover value is also examined. We find strong evidence that biosolids significantly increases soil stability and coverage of certain plant species. We also find that MWD and cover value are positively correlated.
+This report examines the effectiveness of biosolids, a new kind of fertilizer that potentially enhances soil activity by providing a food source through microbial activities. In particular, we compare the magnitude of Mean Weight Diameter (MWD), a parameter measuring soil stability, with and without biosolids treatment. We also compare the magnitude of cover value, a criterion for the spread of plant species, between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on the spread of plant species is addressed by linear regression, as well as a non-parametric alternative. The correlation between MWD and cover value is also examined for several species. Our results show strong evidence that biosolids significantly increase soil stability, as well as coverage of certain plant species. We also find that, for many of the plant species, there is a negative correlation between MWD and average cover value. This could be due to the growth of one species negatively affecting others. There are also several species for which there is a moderate positive correlation between MWD and average cover value.
 
 ## 1. Introduction
 
-Soil quality is an important issue affecting agricultural activities and biodiversity. Our client, Emma Avery, is completing her thesis for Master of Soil Science degree which investigates the long term impact of biosolids on soil health and grassland plant communities. Biosolids, the main interest of the experiment, is able to provide a food source for microbial activities thus enhancing soil stability. The experiment was conducted in 2002 at OK Ranch, Jesmond, BC. Four grasslands were randomly chosen and either applied biosolids or left as control (no biosolids). Later, the data were collected in 2016 and passed on to us in January 2017 for analysis. This report’s primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The report assesses the significance of biosolids treatment and indicates that biosolids performs well in terms of enhancing soil stability and increasing spread of plant species. Starting with a description of dataset and methods, the report addresses the above questions of interests with detailed analysis and ends with conclusions and further discussions. 
+Soil quality is an important issue affecting agricultural activities and biodiversity. Our client, Emma Avery, is completing her thesis for Master of Soil Science degree which investigates the long term impact of biosolids on soil health and grassland plant communities. Biosolids, the main interest of the experiment, is able to provided a food source for microbial activities thus enhancing soil stability. The experiment was conducted in 2002 at OK Ranch, Jesmond, BC. Four grasslands were randomly chosen and either applied biosolids or left as control (no biosolids). Later, the data were collected in 2016 and passed on to us in January 2017 for analysis. This report’s primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The report assesses the significance of biosolids treatment and indicates that biosolids perform well in terms of enhancing soil stability and increasing the spread of several plant species. Starting with a description of the dataset and methods, the report addresses the above questions of interest with detailed analyses, and ends with conclusions and further discussions.
 
 ## 2. Data Description
 
@@ -167,15 +168,79 @@ After fitting a regression model with averaged cover value per block as a respon
 
 Since there are an unequal number of observations of MWD and cover value, we test correlation using the eight means from the eight treatment-block combinations for both MWD and cover value. The estimated correlation is 0.645 which indicates a moderately strong positive relationship between MWD and POPR cover value. It means that when soil becomes more stable (larger MWD), the canopy cover of POPR increases, which is intuitive.
 
-## 5. Conclusions & Furthur Discussion
+#### 5. Broader Scope of the Study
 
-There is strong evidence that biosolids treatment and sampling dates have a significant impact on improving soil stability. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of species POPR. There is a moderate positive correlation between MWD and cover value. In conclusion, biosolids is an effective treatment that enhances soil stability and plant canopy cover. Better soil quality is associated with more growth of the plants.     
+The plant species composition dataset contains a total of 50 plant species. The above analyses have investigated the relationship between the average cover value and the treatment (biosolids or control) for a single plant species: Kentucky bluegrass (POPR). Our objective is to expand these analyses to a larger set of species.
 
-For further studies, ordinal regression is more appropriate for plant investigation because cover value is a discrete variable. In terms of the experimental design, we recommend that researchers increase the number of blocks instead of transects. With an increase in the number of independent observations, the response variable would be closer to normality and the standard errors of the estimated coefficients would be smaller. Moreover, soil and plant samples could be taken randomly in blocks instead of in fixed transects since proper randomization may eliminate potential bias at the design stage.
+Our client has specified that they are interested in the following species: Kentucky bluegrass (POPR), bluebunch wheatgrass (PSSP), Nevada bluegrass (POJU), needle-and-thread grass (HECO), nodding onion (ALCE), low pussytoes (ANDI), common dandelion (TAOF), soil (SOIL) and microbiotic crust (BRYO). We thus expand the analysis to include these 9 species. The client has also pointed out that they are interested in any species with a cover greater than 5% across all the sites. However, we find that none of the species occur in all of the 400 sites (4 blocks × 2 treatments × 5 transects × 10 samples per transect). We thus change the criterion to include species whose averages over the (occurring) transects and plots, for every block-treatment combination, are all greater than 5%. This criterion adds 2 further species to the study, junegrass (KOMA) and litter (LITT), resulting in a total of 11 species of interest.
 
-## 6. Appendix
+##### Long term impact of biosolids on plant cover: Linear regression
+
+For every plant species, we follow the same analysis methods as before. Specifically, we take the average cover value over each treatment-block combination, adding a cover value of 0 for any combination in which there is no presence recorded. We then fit a simple linear model with the average cover value as the response variable and treatment as the explanatory variable.
+
+Table 5.1 shows the results of the linear regression models, with p-values and estimates corresponding to the slope coefficient, i.e. the difference in average cover value between the biosolids and control treatment levels. We find that there is a significant treatment effect (p-value < 0.05) for more than half of the species. This indicates that, for these species, there is strong evidence to reject the null hypothesis that biosolids and control produce indifferent average cover values. For five species (ALCE, HECO, POJU, PSSP, TAOF), the p-value is somewhat large, indicating that biosolids do not have a significant impact on the average cover values of these plant species.
+
+```{r,echo=FALSE}
+load(file='OutMat.RData')
+table5.1 <- data.frame(Species=rep(NA,times=length(out.mat[,1])),
+                       p.value=rep(NA,times=length(out.mat[,1])),
+                       Regression.Coefficient=rep(NA,times=length(out.mat[,1])))
+table5.1$Species <- out.mat[,1]
+table5.1$p.value <- round(as.numeric(out.mat[,2]), digits=2)
+table5.1$Regression.Coefficient <- round(as.numeric(out.mat[,3]), digits=2)
+kable(table5.1, align='r')
+```
+
+Table 5.1 Results of the simple linear regression of average cover value as a function of treatment, for each plant species of interest.
+
+##### Long term impact of biosolids on plant cover: Non-parametric approach
+
+We note that the simple linear regression approach above has several disadvantages. The p-values are obtained from a t-test on the slope coefficients, which has several underlying assumptions. Similar to Figure 4.4, histograms of average cover value for each plant species show that the distributions are highly non-Normal, which violates the Normality assumption required by the t-test. In addition, the sample size is far too small to justify the assumption of Normality of the coefficient estimates that can be made for large sample sizes.
+
+Furthermore, the equal-variance assumption underlying the t-test is severely violated. Boxplots of average cover value for each plant species, similar to Figure 2.4, show extreme differences in variability between the two treatment levels for many of the plant species. There is a possibility that these violations of the t-test assumptions are invalidating the conclusions resulting from the simple linear regression analysis.
+
+Thus, we implement a non-parametric alternative to test for the difference in the average cover values between the biosolids and control groups: the Wilcoxon signed rank test. This is the non-parametric equivalent of the paired t-test, and it is appropriate because the observations belonging to each treatment level are paired according to the block from which they come. The Wilcoxon signed rank test analyzes whether the distribution of the within-pair differences in average cover value is symmetric about zero. It is more appropriate for this setting than its parametric alternative, because it requires no distributional assumptions.
+
+Table 5.2 shows the results of the signed rank tests, with p-values and estimates corresponding to the median difference in average cover value between the biosolids and control treatment levels. With the non-parametric analysis, we find that there are no significant treatment effects for any of the species, which is different from our previous results in Table 5.1. This is due to the fact that, as a non-parametric test, the Wilcoxon signed rank test tends to have less power than its parametric counterpart, where power is defined as the ability to detect an existing treatment effect. This is particularly true when the sample size is small, as is the case for this dataset. Therefore, the non-parametric test has some difficulty identifying these underlying differences.
+
+```{r,echo=FALSE}
+table5.2 <- data.frame(Species=rep(NA,times=length(out.mat[,1])),
+                       p.value=rep(NA,times=length(out.mat[,4])),
+                       Estimate=rep(NA,times=length(out.mat[,5])))
+table5.2$Species <- out.mat[,1]
+table5.2$p.value <- round(as.numeric(out.mat[,4]), digits=2)
+table5.2$Estimate <- round(as.numeric(out.mat[,5]), digits=2)
+kable(table5.2, align='r')
+```
+
+Table 5.2 Results of the Wilcoxon signed rank test of average cover value as a function of treatment, for each plant species of interest.
+
+##### Correlation between MWD and cover value
+
+Finally, we analyze the correlations between aggregate stability (in terms of MWD) and plant cover for each of the species of interest. Earlier, we have found that there is a moderately strong positive correlation between MWD and cover value for the species POPR. In this section, we repeat the analysis for all 11 species of interest.
+
+Table 5.3 shows the correlation between MWD and average cover value, for each of the 11 species. From these results we can say that, for many of the plant species, there is a negative correlation between MWD and average cover value. This could be due to the fact that the growth of one type of species might negatively affect several other types. As with POPR, three other species (LITT, POJU and PSSP) have moderate positive correlations. One species (TAOF) has a very low positive correlation between MWD and average cover value.
+
+```{r,echo=FALSE}
+table5.3 <- data.frame(Species=rep(NA,times=length(out.mat[,1])),
+                       Correlation=rep(NA,times=length(out.mat[,6])))
+table5.3$Species <- out.mat[,1]
+table5.3$Correlation <- round(as.numeric(out.mat[,6]), digits=2)
+kable(table5.3, align='r')
+```
+
+Table 5.3 Correlations between MWD and average cover value, for each plant species of interest.
+
+
+#### 6. Conclusions & Further Discussion
+
+There is strong evidence that biosolids treatment and sampling dates have significant impact on improving soil stability. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of more than half of the selected species, but not for all species.
+
+In terms of correlation between MWD and average cover value, the results shows that for many of the plant species of interest there is a negative correlation. This means that as the MWD increases, the average cover value decreases. This issue might be due to the fact that the growth of some species negatively affects the growth of some other species. This would explain why the biosolids treatment does not always significantly affect the plant species composition, and why the correlation between MWD and average cover value is negative for many of the species. We also note that for some other species there is a moderate to low positive correlation between MWD and average cover value.
+
+In conclusion, biosolids are an effective treatment that enhances soil stability and sometimes the plant canopy cover. For further studies, ordinal regression is more appropriate for plant investigation because cover value is a discrete variable. In terms of the experimental design, we recommend that researchers increase the number of blocks instead of transects. With an increase in the number of independent observations, the response variable would be closer to normality and the standard errors of the estimated coefficients would be smaller. Moreover, soil and plant samples could be taken randomly in blocks instead of in fixed transects since proper randomization may eliminate potential bias at the design stage.
+
+#### 6. Appendix
 
 [link to our Github repository for R code and output](https://github.com/fjhohura/Stat550)
-
-
 
