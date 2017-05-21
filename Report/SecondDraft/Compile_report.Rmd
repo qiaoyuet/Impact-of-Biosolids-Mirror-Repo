@@ -1,7 +1,7 @@
 ---
 title: "Impact of Biosolids on Soil Stability and Plant Cover"
 author: "Yidie Feng, Qiaoyue Tang, Sonja Surjanovic, Fatema Tuz Jhohura"
-date: "5/12/2017"
+date: "5/20/2017"
 output: pdf_document
 ---
 ```{r,warning=FALSE,message=FALSE,results='hide',include=FALSE}
@@ -13,11 +13,11 @@ library('knitr')
 ```
 ## Summary
 
-This report examines the effectiveness of biosolids, a new kind of fertilizer that potentially enhances soil activity by providing a food source through microbial activities. In particular, we compare the magnitude of Mean Weight Diameter (MWD), a parameter measuring soil stability, with and without biosolids treatment. We also compare the magnitude of cover value, a criterion for the spread of plant species, between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on the spread of plant species is addressed by linear regression, as well as a non-parametric alternative. The correlation between MWD and cover value is also examined for several species. Our results show strong evidence that biosolids significantly increase soil stability, as well as coverage of certain plant species. We also find that, for many of the plant species, there is a negative correlation between MWD and average cover value. This could be due to the growth of one species negatively affecting others. There are also several species for which there is a moderate positive correlation between MWD and average cover value.
+This report examines the effectiveness of biosolids, a treatment that potentially enhances soil activity by providing a food source through microbial activities. In particular, we compare the magnitude of Mean Weight Diameter (MWD), a parameter measuring soil stability, with and without biosolids treatment. We also compare the magnitude of cover value, a criterion for spread of plant species, between observations under biosolids and control. The impact of biosolids on soil stability is analyzed by a mixed effect model. The effect on spread of plant species is addressed by linear regression, as well as a non-parametric alternative. The correlation between MWD and cover value is also examined for several species. We find strong evidence that biosolids significantly increases soil stability and coverage of certain plant species. We also find that, for many of the plant species, there is a negative correlation between MWD and average cover value. This could be due to the growth of one species negatively affecting others. There are also several species for which there is a moderate positive correlation between MWD and average cover value.
 
 ## 1. Introduction
 
-Soil quality is an important issue affecting agricultural activities and biodiversity. Our client, Emma Avery, is completing her thesis for Master of Soil Science degree which investigates the long term impact of biosolids on soil health and grassland plant communities. Biosolids, the main interest of the experiment, is able to provided a food source for microbial activities thus enhancing soil stability. The experiment was conducted in 2002 at OK Ranch, Jesmond, BC. Four grasslands were randomly chosen and either applied biosolids or left as control (no biosolids). Later, the data were collected in 2016 and passed on to us in January 2017 for analysis. This report’s primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The report assesses the significance of biosolids treatment and indicates that biosolids perform well in terms of enhancing soil stability and increasing the spread of several plant species. Starting with a description of the dataset and methods, the report addresses the above questions of interest with detailed analyses, and ends with conclusions and further discussions.
+Soil quality is an important issue affecting agricultural activities and biodiversity. Our client, Emma Avery, is completing her thesis for Master of Soil Science degree which investigates the long term impact of biosolids on soil health and grassland plant communities. Biosolids, the main interest of the experiment, is able to provide a food source for microbial activities thus enhancing soil stability. The experiment was conducted in 2002 at OK Ranch, Jesmond, BC. Four grasslands were randomly chosen and either applied biosolids or left as control (no biosolids). Later, the data were collected in 2016 and passed on to us in January 2017 for analysis. This report’s primary interest is to investigate whether Mean Weight Diameter (MWD), a parameter that quantifies soil productivity, is affected by 1) treatment type and 2) sampling date. The secondary interest is to explore the effect of biosolids on specific plant species composition. The third interest is to examine the correlation between MWD and the cover value of plants. The report assesses the significance of biosolids treatment and indicates that biosolids performs well in terms of enhancing soil stability and increasing spread of plant species. Starting with a description of dataset and methods, the report addresses the above questions of interests with detailed analysis and ends with conclusions and further discussions. 
 
 ## 2. Data Description
 
@@ -231,16 +231,17 @@ kable(table5.3, align='r')
 
 Table 5.3 Correlations between MWD and average cover value, for each plant species of interest.
 
+## 6. Conclusions & Further Discussion
 
-#### 6. Conclusions & Further Discussion
+There is strong evidence that biosolids treatment and sampling dates have a significant impact on improving soil stability. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of more than half of the selected species, but not for all species.
 
-There is strong evidence that biosolids treatment and sampling dates have significant impact on improving soil stability. They affect MWD interactively instead of individually. There is also strong evidence that biosolids application increases the spread of more than half of the selected species, but not for all species.
-
-In terms of correlation between MWD and average cover value, the results shows that for many of the plant species of interest there is a negative correlation. This means that as the MWD increases, the average cover value decreases. This issue might be due to the fact that the growth of some species negatively affects the growth of some other species. This would explain why the biosolids treatment does not always significantly affect the plant species composition, and why the correlation between MWD and average cover value is negative for many of the species. We also note that for some other species there is a moderate to low positive correlation between MWD and average cover value.
+In terms of correlation between MWD and average cover value, the results show that for many of the plant species of interest there is a negative correlation. This means that as the MWD increases, the average cover value decreases. This issue might be due to the fact that the growth of some species negatively affects the growth of some other species. This would explain why the biosolids treatment does not always significantly affect the plant species composition, and why the correlation between MWD and average cover value is negative for many of the species. We also note that for some other species there is a moderate to low positive correlation between MWD and average cover value.
 
 In conclusion, biosolids are an effective treatment that enhances soil stability and sometimes the plant canopy cover. For further studies, ordinal regression is more appropriate for plant investigation because cover value is a discrete variable. In terms of the experimental design, we recommend that researchers increase the number of blocks instead of transects. With an increase in the number of independent observations, the response variable would be closer to normality and the standard errors of the estimated coefficients would be smaller. Moreover, soil and plant samples could be taken randomly in blocks instead of in fixed transects since proper randomization may eliminate potential bias at the design stage.
 
-#### 6. Appendix
+## 7. Appendix
 
 [link to our Github repository for R code and output](https://github.com/fjhohura/Stat550)
+
+
 
